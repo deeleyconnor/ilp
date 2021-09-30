@@ -17,6 +17,9 @@ enum DroneConfinementArea {
 
 public class LongLat {
 
+    private final static double closeDistance =  0.00015f;
+    private final static double moveDistance = 0.00015f;
+
     public double longitude;
     public double latitude;
 
@@ -41,5 +44,17 @@ public class LongLat {
         double distance = Math.sqrt(Math.pow(longitudeDiff, 2) + Math.pow(latitudeDiff, 2));
 
         return distance;
+    }
+
+    public boolean closeTo(LongLat target) {
+        double distance = distanceTo(target);
+
+        boolean close = distance < closeDistance;
+
+        return close;
+    }
+
+    public LongLat nextPosition(int angle) {
+        return this;
     }
 }
