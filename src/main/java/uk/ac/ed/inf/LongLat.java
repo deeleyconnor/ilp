@@ -17,8 +17,9 @@ enum DroneConfinementArea {
 
 public class LongLat {
 
-    private final static double closeDistance =  0.00015f;
-    private final static double moveDistance = 0.00015f;
+    private final static double closeDistance =  0.00015;
+    private final static double moveDistance = 0.00015;
+    private final static int hoverAngle = -999;
 
     public double longitude;
     public double latitude;
@@ -29,8 +30,8 @@ public class LongLat {
     }
 
     public boolean isConfined() {
-        boolean confined = (DroneConfinementArea.MIN_LONGITUDE.value < this.longitude)
-                        && (DroneConfinementArea.MAX_LONGITUDE.value > this.longitude)
+        boolean confined = (DroneConfinementArea.MIN_LONGITUDE.value > this.longitude)
+                        && (DroneConfinementArea.MAX_LONGITUDE.value < this.longitude)
                         && (DroneConfinementArea.MIN_LATITUDE.value < this.latitude)
                         && (DroneConfinementArea.MAX_LATITUDE.value > this.latitude);
 
@@ -55,6 +56,14 @@ public class LongLat {
     }
 
     public LongLat nextPosition(int angle) {
-        return this;
+        if (hoverAngle == angle) { return this; }
+
+        double longitudeMovement = Math.cos(Math.toRadians(angle)) * moveDistance;
+        double latitudeMovement = Math.sin(Math.toRadians(angle)) * moveDistance;
+
+        double newLongitude = this.longitude + longitudeMovement;
+        double newLatitude = this.latitude + latitudeMovement;
+
+        return new LongLat(newLongitude,newLatitude);
     }
 }
