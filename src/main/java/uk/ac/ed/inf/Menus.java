@@ -1,16 +1,52 @@
 package uk.ac.ed.inf;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.net.URI;
+
+
 public class Menus {
 
-    public String machineName;
-    public String port;
+    private final static int STANDARD_DELIVERY_CHARGE = 50;
 
-    public Menus(String machineName, String port){
-        this.machineName = machineName;
-        this.port = port;
+    public static final HttpClient client = HttpClient.newHttpClient();
+
+    private Shop[] shops;
+
+    public Menus(String machineName, String port) {
+        String urlString = String.format("http://%s:%s/menus/menus.json\n", machineName, port); ;
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlString)) .build();
+
+        try {
+            HttpResponse <String> response = client.send(request, BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                shops = new Gson().fromJson(response.body(), Shop[].class);
+            }
+            else {
+                System.out.println("Menu Request Failed");
+                System.out.println(response.statusCode());
+                System.exit(1);
+            }
+
+        }
+        catch (Exception e) {
+            System.out.println("Menus Request Failed");
+            System.out.println(e);
+            System.exit(1);
+        }
     }
 
     public int getDeliveryCost(String ... order) {
-        return 50;
+        int itemCost = 0;
+
+
+        return itemCost + STANDARD_DELIVERY_CHARGE;
     }
 }
