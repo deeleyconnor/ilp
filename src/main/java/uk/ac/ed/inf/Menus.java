@@ -19,7 +19,7 @@ public class Menus {
     private Shop[] shops;
 
     public Menus(String machineName, String port) {
-        String urlString = String.format("http://%s:%s/menus/menus.json\n", machineName, port); ;
+        String urlString = String.format("http://%s:%s/menus/menus.json", machineName, port); ;
 
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlString)) .build();
 
@@ -44,9 +44,20 @@ public class Menus {
     }
 
     public int getDeliveryCost(String ... order) {
-        int itemCost = 0;
+        int orderCost = 0;
 
+        for (String orderItem : order) {
+            itemSearch:
+            for (Shop shop : shops) {
+                for (Shop.Item menuItem : shop.menu) {
+                    if (menuItem.item.equals(orderItem)) {
+                        orderCost = orderCost + menuItem.pence;
+                        break itemSearch;
+                    }
+                }
+            }
+        }
 
-        return itemCost + STANDARD_DELIVERY_CHARGE;
+        return orderCost + STANDARD_DELIVERY_CHARGE;
     }
 }
