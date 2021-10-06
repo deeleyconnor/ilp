@@ -18,7 +18,7 @@ public class Menus {
      *
      * @param machineName The name of the machine which the server is running on.
      * @param port The port which the server is running on.
-     * @see App
+     * @see WebServerClient
      * @see Shop
      */
     public Menus(String machineName, String port) {
