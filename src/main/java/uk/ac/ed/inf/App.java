@@ -18,7 +18,7 @@ public class App
         System.out.println( "System Started!" );
     }
 
-    public static String websiteRequest(String urlString) {
+    public static String serverRequest(String urlString) {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlString)).build();
 
         try {
