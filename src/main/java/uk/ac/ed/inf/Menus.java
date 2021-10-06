@@ -13,8 +13,8 @@ public class Menus {
     private Shop[] shops;
 
     /**
-     * Creates an instance of the Menus class. Data for the menus is requested using the App class serverRequest from
-     * http://machineName:port/MENUS_FILE_LOCATION and are stored as a collection of shops.
+     * Creates an instance of the Menus class. Data for the menus is requested using the WebServerClient request method
+     * from http://machineName:port/MENUS_FILE_LOCATION and are stored as a collection of shops.
      *
      * @param machineName The name of the machine which the server is running on.
      * @param port The port which the server is running on.
@@ -23,7 +23,7 @@ public class Menus {
      */
     public Menus(String machineName, String port) {
         String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION); ;
-        String responseBody = App.serverRequest(urlString);
+        String responseBody = WebServerClient.request(urlString);
 
         shops = new Gson().fromJson(responseBody, Shop[].class);
     }
