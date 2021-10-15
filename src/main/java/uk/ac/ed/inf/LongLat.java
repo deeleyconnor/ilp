@@ -32,8 +32,8 @@ public class LongLat {
     private final static double MOVE_DISTANCE = 0.00015;
     private final static int HOVER_ANGLE = -999;
 
-    public double longitude;
-    public double latitude;
+    public final double longitude;
+    public final double latitude;
 
     /**
      * Creates an instance of the LongLat Class.
