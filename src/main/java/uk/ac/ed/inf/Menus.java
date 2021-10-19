@@ -22,7 +22,7 @@ public class Menus {
      * @see Shop
      */
     public Menus(String machineName, String port) {
-        String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION); ;
+        String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION);
         String responseBody = WebServerClient.request(urlString);
 
         shops = new Gson().fromJson(responseBody, Shop[].class);
