@@ -7,12 +7,19 @@ public class Order {
     private String orderNo;
     private String customer;
     private LongLat deliverTo;
-    private ArrayList<String> order;
+    private ArrayList<String> items;
 
-    public Order(String orderNo, String customer,ArrayList<String> order,  String words) {
+    /**
+     *
+     * @param orderNo
+     * @param customer
+     * @param items
+     * @param words
+     */
+    public Order(String orderNo, String customer, ArrayList<String> items, String words) {
         this.orderNo = orderNo;
         this.customer = customer;
-        this.order = order;
+        this.items = items;
 
         //Figure way to convery words to LongLat
     }
