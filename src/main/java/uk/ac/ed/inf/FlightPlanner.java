@@ -1,2 +1,4 @@
-package uk.ac.ed.inf;public class FlightPlanner {
+package uk.ac.ed.inf;
+
+public class FlightPlanner {
 }
