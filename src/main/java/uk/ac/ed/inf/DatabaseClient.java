@@ -23,7 +23,9 @@ public class DatabaseClient {
         psOrderDetailsQuery = conn.prepareStatement(ORDER_DETAILS_QUERY);
     }
 
-    public ArrayList<Order> getOrders(String date) throws SQLException {
+    public ArrayList<Order> getOrders(String day, String month, String year) throws SQLException {
+        String date = String.format("%s-%s-%s", year,month,day);
+
         psOrdersQuery.setString(2,date);
 
         ArrayList<Order> orders = new ArrayList<>();
