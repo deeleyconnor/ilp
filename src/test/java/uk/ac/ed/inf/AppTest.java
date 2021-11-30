@@ -129,7 +129,7 @@ public class AppTest {
     @Test
     public void testMenusOne() {
         // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
         int totalCost = menus.getDeliveryCost(
                 "Ham and mozzarella Italian roll"
         );
@@ -140,7 +140,7 @@ public class AppTest {
     @Test
     public void testMenusTwo() {
         // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
         int totalCost = menus.getDeliveryCost(
                 "Ham and mozzarella Italian roll",
                 "Salami and Swiss Italian roll"
@@ -152,7 +152,7 @@ public class AppTest {
     @Test
     public void testMenusThree() {
         // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
         int totalCost = menus.getDeliveryCost(
                 "Ham and mozzarella Italian roll",
                 "Salami and Swiss Italian roll",
@@ -165,7 +165,7 @@ public class AppTest {
     @Test
     public void testMenusFourA() {
         // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
         int totalCost = menus.getDeliveryCost(
                 "Ham and mozzarella Italian roll",
                 "Salami and Swiss Italian roll",
@@ -179,7 +179,7 @@ public class AppTest {
     @Test
     public void testMenusFourB() {
         // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "9898");
+        Menus menus = new Menus("localhost", "80");
         int totalCost = menus.getDeliveryCost(
                 "Flaming tiger latte",
                 "Dirty matcha latte",

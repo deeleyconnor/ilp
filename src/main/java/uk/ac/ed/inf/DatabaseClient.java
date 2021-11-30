@@ -23,7 +23,7 @@ public class DatabaseClient {
         psOrderDetailsQuery = conn.prepareStatement(ORDER_DETAILS_QUERY);
     }
 
-    public ArrayList<Order> getOrders(String day, String month, String year) throws SQLException {
+    public ArrayList<Order> getOrders(String day, String month, String year, LocationFinder locationFinder) throws SQLException {
         String date = String.format("%s-%s-%s", year,month,day);
 
         psOrdersQuery.setString(2,date);
@@ -34,8 +34,11 @@ public class DatabaseClient {
             String orderNo = rs.getString("orderNo");
             String customer = rs.getString("customer");
             String words = rs.getString("deliverTo");
+
             ArrayList<String> items = getOrderDetails(orderNo);
-            orders.add(new Order(orderNo, customer, items, words));
+            LongLat deliveryLocation = locationFinder.findLocation(words);
+
+            orders.add(new Order(orderNo, customer, items, deliveryLocation));
         }
 
         return orders;

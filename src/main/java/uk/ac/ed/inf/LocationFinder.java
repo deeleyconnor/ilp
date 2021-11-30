@@ -1,10 +1,9 @@
 package uk.ac.ed.inf;
 
 import com.google.gson.Gson;
+import uk.ac.ed.inf.JsonTemplates.Words;
 
-import javax.xml.stream.Location;
 import java.util.Hashtable;
-import java.util.Map;
 
 public class LocationFinder {
     private final static String WORDS_FILE_LOCATION = "words/%s/details.json";
@@ -21,17 +20,17 @@ public class LocationFinder {
         locations = new Hashtable<String, LongLat>();
     }
 
-    public LongLat getLocation(String locationWords) {
+    public LongLat findLocation(String words) {
 
-        LongLat location = locations.get(locationWords);
+        LongLat location = locations.get(words);
 
         if (location == null) {
-            String urlString = String.format("http://%s:%s/%s", machineName, port, locationWords.replaceAll(",","/"));
+            String urlString = String.format("http://%s:%s/%s", machineName, port, words.replaceAll(",","/"));
             String responseBody = WebServerClient.request(urlString);
 
-            Words words = new Gson().fromJson(responseBody, Words.class);
-            location = new LongLat(words.coordinates.lng, words.coordinates.lat);
-            locations.put(locationWords, location);
+            Words jsonWords = new Gson().fromJson(responseBody, Words.class);
+            location = new LongLat(jsonWords.coordinates.lng, jsonWords.coordinates.lat);
+            locations.put(words, location);
         }
 
         return location;

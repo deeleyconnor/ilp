@@ -1,6 +1,10 @@
 package uk.ac.ed.inf;
 
+import uk.ac.ed.inf.JsonTemplates.Shop;
 import com.google.gson.Gson;
+
+import java.util.HashMap;
+
 
 /**
  * Represents the menus that are available to the delivery service.
@@ -10,22 +14,41 @@ public class Menus {
     private final static int STANDARD_DELIVERY_CHARGE = 50;
     private final static String MENUS_FILE_LOCATION = "menus/menus.json";
 
-    private Shop[] shops;
+    public HashMap<String, Item> items;
+
+    public class Item {
+        public int price;
+        public LongLat location;
+
+        public Item(int price, LongLat location) {
+            this.price = price;
+            this.location = location;
+        }
+    }
 
     /**
      * Creates an instance of the Menus class. Data for the menus is requested using the WebServerClient request method
      * from http://machineName:port/MENUS_FILE_LOCATION and are stored as a collection of shops.
      *
      * @param machineName The name of the machine which the server is running on.
-     * @param port The port which the server is running on.
+     * @param port The port which the server is running on
+     * @param locationFinder
      * @see WebServerClient
      * @see Shop
      */
-    public Menus(String machineName, String port) {
+    public Menus(String machineName, String port, LocationFinder locationFinder) {
         String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION);
         String responseBody = WebServerClient.request(urlString);
 
-        shops = new Gson().fromJson(responseBody, Shop[].class);
+        Shop[] shops = new Gson().fromJson(responseBody, Shop[].class);
+        items = new HashMap<String, Item>();
+
+        for (Shop shop : shops) {
+            LongLat location = locationFinder.findLocation(shop.location);
+            for (Shop.Item item :shop.menu) {
+                items.put(item.item, new Item(item.pence, location));
+            }
+        }
     }
 
     /**
@@ -38,28 +61,9 @@ public class Menus {
         int orderCost = STANDARD_DELIVERY_CHARGE;
 
         for (String item : order) {
-            orderCost += getItemCost(item);
+            orderCost += items.get(item).price;
         }
 
         return orderCost;
-    }
-
-    /**
-     * This method gets the cost of an individual item by searching through the individual menus of each of the shops.
-     *
-     * @param item The item of which we are looking for the cost.
-     * @return The cost in pence of the given orderItem. Returns 0 if item was not found.
-     * @see Shop
-     */
-    private int getItemCost(String item) {
-        for (Shop shop : shops) {
-            for (Shop.Item menuItem : shop.menu) {
-                if (menuItem.item.equals(item)) {
-                    return menuItem.pence;
-                }
-            }
-        }
-
-        return 0;
     }
 }
