@@ -48,4 +48,16 @@ public class Order {
     private void setOrderPrice(Menus menus) {
         this.orderPrice = menus.getDeliveryCost(items);
     }
+
+    public LongLat getDeliveryLocation() {
+        return this.deliveryLocation;
+    }
+
+    public ArrayList<LongLat> getPickupLocations() {
+        return this.pickupLocations;
+    }
+
+    public int getOrderPrice() {
+        return this.orderPrice;
+    }
 }
