@@ -23,7 +23,7 @@ public class DatabaseClient {
         psOrderDetailsQuery = conn.prepareStatement(ORDER_DETAILS_QUERY);
     }
 
-    public ArrayList<Order> getOrders(String day, String month, String year, LocationFinder locationFinder) throws SQLException {
+    public ArrayList<Order> getOrders(String day, String month, String year, LocationFinder locationFinder, Menus menus) throws SQLException {
         String date = String.format("%s-%s-%s", year,month,day);
 
         psOrdersQuery.setString(2,date);

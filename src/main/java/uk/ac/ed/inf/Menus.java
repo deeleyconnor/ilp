@@ -3,6 +3,7 @@ package uk.ac.ed.inf;
 import uk.ac.ed.inf.JsonTemplates.Shop;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -50,26 +51,21 @@ public class Menus {
         }
     }
 
-    /**
-     * This method calculates the cost of a order being delivered by drone including the standard delivery charge.
-     *
-     * @param order A variable number of String of names of items for an order.
-     * @return The cost in pence to deliver the given list of items.
-     */
-    public int getDeliveryCost(String ... order) {
+
+    public int getDeliveryCost(ArrayList<String> orderItems) {
         int orderCost = STANDARD_DELIVERY_CHARGE;
 
-        for (String item : order) {
+        for (String item : orderItems) {
             orderCost += items.get(item).price;
         }
 
         return orderCost;
     }
 
-    public HashSet<String> getDeliveryLocations(String ... order) {
-        HashSet<String> locations = new HashSet<String>();
+    public HashSet<String> getPickupLocations(ArrayList<String> orderItems) {
+        HashSet<String> locations = new HashSet<>();
 
-        for (String item : order) {
+        for (String item : orderItems) {
             locations.add(items.get(item).location);
         }
 
