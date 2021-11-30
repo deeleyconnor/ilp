@@ -32,6 +32,9 @@ public class App
         ArrayList<Order> orders = databaseClient.getOrders(day,month,year);
         orders.forEach( (order) -> order.setOrderObjectives(locationFinder, menus));
 
+        FlightPlanner flightPlanner = new FlightPlanner(MACHINE_NAME, webserverPort);
+
+
     }
 
 }
