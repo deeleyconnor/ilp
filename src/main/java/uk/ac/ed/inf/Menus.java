@@ -33,7 +33,6 @@ public class Menus {
      *
      * @param machineName The name of the machine which the server is running on.
      * @param port The port which the server is running on
-     * @param locationFinder
      * @see WebServerClient
      * @see Shop
      */
