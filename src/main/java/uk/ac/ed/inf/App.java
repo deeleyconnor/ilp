@@ -27,7 +27,8 @@ public class App
 
         DatabaseClient databaseClient = new DatabaseClient(MACHINE_NAME, databasePort);
 
-        Menus menus = new Menus(MACHINE_NAME, webserverPort, locationFinder);
+        Menus menus = new Menus(MACHINE_NAME, webserverPort);
+
         ArrayList<Order> orders = databaseClient.getOrders(day,month,year, locationFinder);
 
     }

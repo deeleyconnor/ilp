@@ -4,6 +4,7 @@ import uk.ac.ed.inf.JsonTemplates.Shop;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 /**
@@ -18,9 +19,9 @@ public class Menus {
 
     public class Item {
         public int price;
-        public LongLat location;
+        public String location;
 
-        public Item(int price, LongLat location) {
+        public Item(int price, String location) {
             this.price = price;
             this.location = location;
         }
@@ -36,7 +37,7 @@ public class Menus {
      * @see WebServerClient
      * @see Shop
      */
-    public Menus(String machineName, String port, LocationFinder locationFinder) {
+    public Menus(String machineName, String port) {
         String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION);
         String responseBody = WebServerClient.request(urlString);
 
@@ -44,9 +45,8 @@ public class Menus {
         items = new HashMap<String, Item>();
 
         for (Shop shop : shops) {
-            LongLat location = locationFinder.findLocation(shop.location);
             for (Shop.Item item :shop.menu) {
-                items.put(item.item, new Item(item.pence, location));
+                items.put(item.item, new Item(item.pence, shop.location));
             }
         }
     }
@@ -65,5 +65,15 @@ public class Menus {
         }
 
         return orderCost;
+    }
+
+    public HashSet<String> getDeliveryLocations(String ... order) {
+        HashSet<String> locations = new HashSet<String>();
+
+        for (String item : order) {
+            locations.add(items.get(item).location);
+        }
+
+        return locations;
     }
 }
