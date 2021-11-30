@@ -29,7 +29,8 @@ public class App
 
         Menus menus = new Menus(MACHINE_NAME, webserverPort);
 
-        ArrayList<Order> orders = databaseClient.getOrders(day,month,year, locationFinder, menus);
+        ArrayList<Order> orders = databaseClient.getOrders(day,month,year);
+        orders.forEach( (order) -> order.setOrderObjectives(locationFinder, menus));
 
     }
 
