@@ -2,6 +2,9 @@ package uk.ac.ed.inf;
 
 import org.junit.Test;
 
+import java.awt.geom.Line2D;
+import java.sql.SQLException;
+
 import static org.junit.Assert.*;
 
 public class AppTest {
@@ -12,6 +15,15 @@ public class AppTest {
     private final LongLat appletonTower = new LongLat(-3.186874, 55.944494);
     private final LongLat businessSchool = new LongLat(-3.1873,55.9430);
     private final LongLat greyfriarsKirkyard = new LongLat(-3.1928,55.9469);
+
+
+    @Test
+    public void testApp() throws SQLException {
+        App.main("15", "09", "2022", "80", "1527");
+
+
+        assertTrue(true);
+    }
 
     @Test
     public void testIsConfinedTrueA(){
@@ -126,69 +138,87 @@ public class AppTest {
         assertTrue(approxEq(nextPosition, appletonTower));
     }
 
-    @Test
-    public void testMenusOne() {
-        // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "80");
-        int totalCost = menus.getDeliveryCost(
-                "Ham and mozzarella Italian roll"
-        );
-        // Don't forget the standard delivery charge of 50p
-        assertEquals(230 + 50, totalCost);
-    }
+//    @Test
+//    public void testNoFlyZonesFalse() {
+//        FlightPlanner flightPlanner = new FlightPlanner("localhost", "80");
+//
+//        Line2D path = new Line2D.Double(-3.191594,55.943658,-3.186199,55.945734);
+//
+//        assertFalse(flightPlanner.avoidsNoFlyZones(path));
+//    }
+//
+//    @Test
+//    public void testNoFlyZonesTrue() {
+//        FlightPlanner flightPlanner = new FlightPlanner("localhost", "80");
+//
+//        Line2D path = new Line2D.Double(-3.191594,55.943658,appletonTower.longitude,appletonTower.latitude);
+//
+//        assertTrue(flightPlanner.avoidsNoFlyZones(path));
+//    }
 
-    @Test
-    public void testMenusTwo() {
-        // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "80");
-        int totalCost = menus.getDeliveryCost(
-                "Ham and mozzarella Italian roll",
-                "Salami and Swiss Italian roll"
-        );
-        // Don't forget the standard delivery charge of 50p
-        assertEquals(230 + 230 + 50, totalCost);
-    }
-
-    @Test
-    public void testMenusThree() {
-        // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "80");
-        int totalCost = menus.getDeliveryCost(
-                "Ham and mozzarella Italian roll",
-                "Salami and Swiss Italian roll",
-                "Flaming tiger latte"
-        );
-        // Don't forget the standard delivery charge of 50p
-        assertEquals(230 + 230 + 460 + 50, totalCost);
-    }
-
-    @Test
-    public void testMenusFourA() {
-        // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "80");
-        int totalCost = menus.getDeliveryCost(
-                "Ham and mozzarella Italian roll",
-                "Salami and Swiss Italian roll",
-                "Flaming tiger latte",
-                "Dirty matcha latte"
-        );
-        // Don't forget the standard delivery charge of 50p
-        assertEquals(230 + 230 + 460 + 460 + 50, totalCost);
-    }
-
-    @Test
-    public void testMenusFourB() {
-        // The webserver must be running on port 9898 to run this test.
-        Menus menus = new Menus("localhost", "80");
-        int totalCost = menus.getDeliveryCost(
-                "Flaming tiger latte",
-                "Dirty matcha latte",
-                "Strawberry matcha latte",
-                "Fresh taro latte"
-        );
-        // Don't forget the standard delivery charge of 50p
-        assertEquals(4 * 460 + 50, totalCost);
-    }
+//    @Test
+//    public void testMenusOne() {
+//        // The webserver must be running on port 9898 to run this test.
+//        Menus menus = new Menus("localhost", "80");
+//        int totalCost = menus.getDeliveryCost(
+//                "Ham and mozzarella Italian roll"
+//        );
+//        // Don't forget the standard delivery charge of 50p
+//        assertEquals(230 + 50, totalCost);
+//    }
+//
+//    @Test
+//    public void testMenusTwo() {
+//        // The webserver must be running on port 9898 to run this test.
+//        Menus menus = new Menus("localhost", "80");
+//        int totalCost = menus.getDeliveryCost(
+//                "Ham and mozzarella Italian roll",
+//                "Salami and Swiss Italian roll"
+//        );
+//        // Don't forget the standard delivery charge of 50p
+//        assertEquals(230 + 230 + 50, totalCost);
+//    }
+//
+//    @Test
+//    public void testMenusThree() {
+//        // The webserver must be running on port 9898 to run this test.
+//        Menus menus = new Menus("localhost", "80");
+//        int totalCost = menus.getDeliveryCost(
+//                "Ham and mozzarella Italian roll",
+//                "Salami and Swiss Italian roll",
+//                "Flaming tiger latte"
+//        );
+//        // Don't forget the standard delivery charge of 50p
+//        assertEquals(230 + 230 + 460 + 50, totalCost);
+//    }
+//
+//    @Test
+//    public void testMenusFourA() {
+//        // The webserver must be running on port 9898 to run this test.
+//        Menus menus = new Menus("localhost", "80");
+//        int totalCost = menus.getDeliveryCost(
+//                "Ham and mozzarella Italian roll",
+//                "Salami and Swiss Italian roll",
+//                "Flaming tiger latte",
+//                "Dirty matcha latte"
+//        );
+//        // Don't forget the standard delivery charge of 50p
+//        assertEquals(230 + 230 + 460 + 460 + 50, totalCost);
+//    }
+//
+//    @Test
+//    public void testMenusFourB() {
+//        // The webserver must be running on port 9898 to run this test.
+//        Menus menus = new Menus("localhost", "80");
+//        int totalCost = menus.getDeliveryCost(
+//                "Flaming tiger latte",
+//                "Dirty matcha latte",
+//                "Strawberry matcha latte",
+//                "Fresh taro latte"
+//        );
+//        // Don't forget the standard delivery charge of 50p
+//        assertEquals(4 * 460 + 50, totalCost);
+//    }
 
 
 }

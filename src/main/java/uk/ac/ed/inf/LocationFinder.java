@@ -25,7 +25,8 @@ public class LocationFinder {
         LongLat location = locations.get(words);
 
         if (location == null) {
-            String urlString = String.format("http://%s:%s/%s", machineName, port, words.replaceAll(",","/"));
+            String fileLocation = String.format(WORDS_FILE_LOCATION, words.replace(".","/"));
+            String urlString = String.format("http://%s:%s/%s", machineName, port, fileLocation);
             String responseBody = WebServerClient.request(urlString);
 
             Words jsonWords = new Gson().fromJson(responseBody, Words.class);

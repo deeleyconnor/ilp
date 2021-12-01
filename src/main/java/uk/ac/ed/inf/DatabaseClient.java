@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class DatabaseClient {
 
     private static final String DATABASE = "derbyDB";
-    private static final String ORDERS_QUERY = "select * from orders where deliveryData=(?)";
+    private static final String ORDERS_QUERY = "select * from orders where deliveryDate=(?)";
     private static final String ORDER_DETAILS_QUERY = "select * from orderDetails where orderNo=(?)";
 
     private final Connection conn;
@@ -26,7 +26,7 @@ public class DatabaseClient {
     public ArrayList<Order> getOrders(String day, String month, String year) throws SQLException {
         String date = String.format("%s-%s-%s", year,month,day);
 
-        psOrdersQuery.setString(2,date);
+        psOrdersQuery.setString(1,date);
 
         ArrayList<Order> orders = new ArrayList<>();
         ResultSet rs = psOrdersQuery.executeQuery();

@@ -1,5 +1,7 @@
 package uk.ac.ed.inf;
 
+import com.mapbox.geojson.Point;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -12,6 +14,8 @@ public class Order {
     private LongLat deliveryLocation;
     private ArrayList<LongLat> pickupLocations = new ArrayList<>();
     private int orderPrice;
+
+    private ArrayList<Point> orderFlightPlan;
 
     /**
      *
@@ -31,6 +35,10 @@ public class Order {
         setDeliveryLocation(locationFinder);
         setPickupLocations(locationFinder, menus);
         setOrderPrice(menus);
+    }
+
+    public void setOrderFlightPlan(ArrayList<Point> orderFlightPlan) {
+        this.orderFlightPlan = orderFlightPlan;
     }
 
     private void setDeliveryLocation(LocationFinder locationFinder) {
