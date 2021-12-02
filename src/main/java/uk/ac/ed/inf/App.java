@@ -1,5 +1,6 @@
 package uk.ac.ed.inf;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class App
 
         FlightPlanner flightPlanner = new FlightPlanner(MACHINE_NAME, webserverPort);
 
-
+        flightPlanner.dayFlightPlanner(orders);
     }
 
 }

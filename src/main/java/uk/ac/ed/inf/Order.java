@@ -1,7 +1,5 @@
 package uk.ac.ed.inf;
 
-import com.mapbox.geojson.Point;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -15,7 +13,8 @@ public class Order {
     private ArrayList<LongLat> pickupLocations = new ArrayList<>();
     private int orderPrice;
 
-    private ArrayList<Point> orderFlightPlan;
+    private ArrayList<DroneMove> orderFlightPlan;
+    private ArrayList<DroneMove> returnFlightPlan;
 
     /**
      *
@@ -37,8 +36,12 @@ public class Order {
         setOrderPrice(menus);
     }
 
-    public void setOrderFlightPlan(ArrayList<Point> orderFlightPlan) {
+    public void setOrderFlightPlan(ArrayList<DroneMove> orderFlightPlan) {
         this.orderFlightPlan = orderFlightPlan;
+    }
+
+    public void setReturnFlightPlan(ArrayList<DroneMove> returnFlightPlan) {
+        this.returnFlightPlan = returnFlightPlan;
     }
 
     private void setDeliveryLocation(LocationFinder locationFinder) {
@@ -57,6 +60,10 @@ public class Order {
         this.orderPrice = menus.getDeliveryCost(items);
     }
 
+    public String getOrderNo() {
+        return this.orderNo;
+    }
+
     public LongLat getDeliveryLocation() {
         return this.deliveryLocation;
     }
@@ -65,7 +72,19 @@ public class Order {
         return this.pickupLocations;
     }
 
+    public int getOrderFlightPlanMoveCount() {
+        return  this.orderFlightPlan.size();
+    }
+
+    public int getOrderAndReturnFlightPlanMoveCount() {
+        return  this.orderFlightPlan.size() + this.returnFlightPlan.size();
+    }
+
     public int getOrderPrice() {
         return this.orderPrice;
+    }
+
+    public double getOrderValue() {
+        return this.orderPrice / this.getOrderFlightPlanMoveCount();
     }
 }

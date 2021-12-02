@@ -1,5 +1,7 @@
 package uk.ac.ed.inf;
 
+import com.mapbox.geojson.Point;
+
 import java.lang.Math;
 
 /**
@@ -29,7 +31,7 @@ enum DroneConfinementArea {
 public class LongLat {
 
     private final static double CLOSE_DISTANCE =  0.00015;
-    private final static double MOVE_DISTANCE = 0.00015;
+    public final static double MOVE_DISTANCE = 0.00015;
     private final static int HOVER_ANGLE = -999;
 
     public final double longitude;
@@ -47,6 +49,11 @@ public class LongLat {
         this.latitude = latitude;
     }
 
+    public LongLat (Point point) {
+        this.longitude = point.longitude();
+        this.latitude = point.latitude();
+    }
+
     /**
      * This method checks whether this LongLat instance is within the drone confinement area.
      *
@@ -54,12 +61,10 @@ public class LongLat {
      * @see DroneConfinementArea
      */
     public boolean isConfined() {
-        boolean confined = (DroneConfinementArea.MIN_LONGITUDE.value > this.longitude)
+        return (DroneConfinementArea.MIN_LONGITUDE.value > this.longitude)
                         && (DroneConfinementArea.MAX_LONGITUDE.value < this.longitude)
                         && (DroneConfinementArea.MIN_LATITUDE.value < this.latitude)
                         && (DroneConfinementArea.MAX_LATITUDE.value > this.latitude);
-
-        return confined;
     }
 
     /**
@@ -73,9 +78,7 @@ public class LongLat {
         double longitudeDiff = this.longitude - target.longitude;
         double latitudeDiff = this.latitude - target.latitude;
 
-        double distance = Math.sqrt(Math.pow(longitudeDiff, 2) + Math.pow(latitudeDiff, 2));
-
-        return distance;
+        return Math.sqrt(Math.pow(longitudeDiff, 2) + Math.pow(latitudeDiff, 2));
     }
 
     /**
@@ -88,9 +91,20 @@ public class LongLat {
     public boolean closeTo(LongLat target) {
         double distance = distanceTo(target);
 
-        boolean close = distance < CLOSE_DISTANCE;
+        return distance < CLOSE_DISTANCE;
+    }
 
-        return close;
+    public int angleTo(LongLat target) {
+        double longitudeDiff = target.longitude - this.longitude;
+        double latitudeDiff = target.latitude - this.latitude;
+
+        int angle = (int) (Math.round(Math.toDegrees(Math.atan2(latitudeDiff,longitudeDiff)) / 10) * 10);
+
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        return angle;
     }
 
     /**
@@ -111,4 +125,14 @@ public class LongLat {
 
         return new LongLat(newLongitude,newLatitude);
     }
+
+    public Point toPoint() {
+        return Point.fromLngLat(this.longitude, this.latitude);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Longitude: %s and Latitude: %s", this.longitude,this.latitude);
+    }
+
 }
