@@ -5,6 +5,8 @@ import com.mapbox.geojson.*;
 import javax.sound.midi.Soundbank;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -41,21 +43,54 @@ public class FlightPlanner {
         return featureCollection;
     }
 
-    public void dayFlightPlanner(ArrayList<Order> orders) {
+    public ArrayList<DroneMove> dayFlightPlanner(ArrayList<Order> orders) {
         orders.forEach( (order) -> this.orderFlightPlanner(order));
 
         ArrayList<DroneMove> flightPlan = new ArrayList<>();
+
+        ArrayList<DroneMove> returnFlightPlan = new ArrayList<>();
+
+        LongLat currentPos = APPLETON_TOWER;
         int movesAvailable = MAXIMUM_DRONE_MOVES;
 
+        boolean flightPlanComplete = false;
 
-        int c = 0;
-        for (Order order : orders) {
-            c++;
-            System.out.println(String.format("Order %s",c));
-            System.out.println(order.getOrderFlightPlanMoveCount());
-            System.out.println(order.getOrderAndReturnFlightPlanMoveCount());
-            System.out.println(order.getOrderValue());
+        while (!flightPlanComplete) {
+            ArrayList<DroneMove> opitimalOrderFlightPlanToStart = new ArrayList<>();
+            double optimalOrderValue = Double.MIN_VALUE;
+            Order optimalOrder = null;
+            for (Order order : orders) {
+                ArrayList<Point> currentOrderStartFlightPath = twoPointsFlightPlanner(currentPos, order.getStartLocation());
+                currentOrderStartFlightPath.add(order.getStartLocation().toPoint());
+                ArrayList<DroneMove> currentOrderStartFlightPlan = (convertPointsToFlightPlan(currentOrderStartFlightPath, order.getOrderNo()));
+
+                int orderAndReturnMoveCount = currentOrderStartFlightPlan.size() + order.getOrderAndReturnFlightPlanMoveCount();
+
+                if (orderAndReturnMoveCount <= movesAvailable) {
+                    double currentOrderValue = order.getOrderValue(currentOrderStartFlightPlan.size());
+
+                    if (currentOrderValue > optimalOrderValue) {
+                        optimalOrderValue = currentOrderValue;
+                        optimalOrder = order;
+                        opitimalOrderFlightPlanToStart = currentOrderStartFlightPlan;
+                    }
+                }
+            }
+
+            if (optimalOrder != null) {
+                flightPlan.addAll(opitimalOrderFlightPlanToStart);
+                flightPlan.addAll(optimalOrder.getOrderFlightPlan());
+                optimalOrder.complete();
+                movesAvailable -= opitimalOrderFlightPlanToStart.size() + optimalOrder.getOrderFlightPlanMoveCount();
+                returnFlightPlan = optimalOrder.getReturnFlightPlan();
+            }
+            else {
+                flightPlanComplete = true;
+                flightPlan.addAll(returnFlightPlan);
+            }
         }
+
+        return flightPlan;
     }
 
     private void orderFlightPlanner(Order order) {
@@ -196,7 +231,6 @@ public class FlightPlanner {
             if (currentPosition.closeTo(targetPosition)) {
                 targetPositionNumber++;
             }
-
         }
 
         return flightPlan;

@@ -16,6 +16,8 @@ public class Order {
     private ArrayList<DroneMove> orderFlightPlan;
     private ArrayList<DroneMove> returnFlightPlan;
 
+    private boolean completed = false;
+
     /**
      *
      * @param orderNo
@@ -76,15 +78,37 @@ public class Order {
         return  this.orderFlightPlan.size();
     }
 
+    public ArrayList<DroneMove> getOrderFlightPlan() {
+       return this.orderFlightPlan;
+    }
+
     public int getOrderAndReturnFlightPlanMoveCount() {
         return  this.orderFlightPlan.size() + this.returnFlightPlan.size();
+    }
+
+    public ArrayList<DroneMove> getReturnFlightPlan() {
+        return this.returnFlightPlan;
     }
 
     public int getOrderPrice() {
         return this.orderPrice;
     }
 
-    public double getOrderValue() {
-        return this.orderPrice / this.getOrderFlightPlanMoveCount();
+    public LongLat getStartLocation() {
+        return orderFlightPlan.get(0).fromLongLat;
+    }
+
+    public double getOrderValue(int moveCountToStartLocation) {
+        double totalMoves = this.getOrderFlightPlanMoveCount() + moveCountToStartLocation;
+
+        return this.orderPrice / totalMoves;
+    }
+
+    public void complete() {
+        this.completed = true;
+    }
+
+    public boolean completed() {
+        return this.completed;
     }
 }

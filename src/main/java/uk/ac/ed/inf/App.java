@@ -36,7 +36,9 @@ public class App
 
         FlightPlanner flightPlanner = new FlightPlanner(MACHINE_NAME, webserverPort);
 
-        flightPlanner.dayFlightPlanner(orders);
+        ArrayList<DroneMove> flightPlan = flightPlanner.dayFlightPlanner(orders);
+
+
     }
 
 }
