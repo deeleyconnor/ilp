@@ -38,7 +38,7 @@ public class App
 
         ArrayList<DroneMove> flightPlan = flightPlanner.dayFlightPlanner(orders);
 
-
+        new FlightPlan(flightPlan).toGeoJson();
     }
 
 }

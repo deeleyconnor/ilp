@@ -2,11 +2,8 @@ package uk.ac.ed.inf;
 
 import com.mapbox.geojson.*;
 
-import javax.sound.midi.Soundbank;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -60,19 +57,22 @@ public class FlightPlanner {
             double optimalOrderValue = Double.MIN_VALUE;
             Order optimalOrder = null;
             for (Order order : orders) {
-                ArrayList<Point> currentOrderStartFlightPath = twoPointsFlightPlanner(currentPos, order.getStartLocation());
-                currentOrderStartFlightPath.add(order.getStartLocation().toPoint());
-                ArrayList<DroneMove> currentOrderStartFlightPlan = (convertPointsToFlightPlan(currentOrderStartFlightPath, order.getOrderNo()));
+                if (!order.completed())
+                {
+                    ArrayList<Point> currentOrderStartFlightPath = twoPointsFlightPlanner(currentPos, order.getStartLocation());
+                    currentOrderStartFlightPath.add(order.getStartLocation().toPoint());
+                    ArrayList<DroneMove> currentOrderStartFlightPlan = (convertPointsToFlightPlan(currentOrderStartFlightPath, order.getOrderNo()));
 
-                int orderAndReturnMoveCount = currentOrderStartFlightPlan.size() + order.getOrderAndReturnFlightPlanMoveCount();
+                    int orderAndReturnMoveCount = currentOrderStartFlightPlan.size() + order.getOrderAndReturnFlightPlanMoveCount();
 
-                if (orderAndReturnMoveCount <= movesAvailable) {
-                    double currentOrderValue = order.getOrderValue(currentOrderStartFlightPlan.size());
+                    if (orderAndReturnMoveCount <= movesAvailable) {
+                        double currentOrderValue = order.getOrderValue(currentOrderStartFlightPlan.size());
 
-                    if (currentOrderValue > optimalOrderValue) {
-                        optimalOrderValue = currentOrderValue;
-                        optimalOrder = order;
-                        opitimalOrderFlightPlanToStart = currentOrderStartFlightPlan;
+                        if (currentOrderValue > optimalOrderValue) {
+                            optimalOrderValue = currentOrderValue;
+                            optimalOrder = order;
+                            opitimalOrderFlightPlanToStart = currentOrderStartFlightPlan;
+                        }
                     }
                 }
             }
@@ -89,6 +89,8 @@ public class FlightPlanner {
                 flightPlan.addAll(returnFlightPlan);
             }
         }
+
+        System.out.println();
 
         return flightPlan;
     }
@@ -131,13 +133,14 @@ public class FlightPlanner {
 
             for (LongLat landmark: landmarks) {
                 Line2D pickupToLandmark = makeLineFromLongLat(startLocation, landmark);
-                Line2D landmarkToDelivery = makeLineFromLongLat(startLocation, landmark);
+                Line2D landmarkToDelivery = makeLineFromLongLat(landmark, finishLocation);
 
                 if (avoidsNoFlyZones(pickupToLandmark) && avoidsNoFlyZones(landmarkToDelivery)) {
                     double pathLength = landmark.distanceTo(startLocation) + landmark.distanceTo(finishLocation);
 
                     if (pathLength < bestPathLength) {
                         bestPoint = landmark.toPoint();
+                        bestPathLength = pathLength;
                     }
                 }
             }
