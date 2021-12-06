@@ -32,7 +32,7 @@ public class FlightPlanner {
     }
 
     private FeatureCollection getGeoJsonData(String machineName, String port, String fileLocation) {
-        String urlString = String.format("http://%s:%s/%s", machineName, port, fileLocation);
+        String urlString = WebServerClient.getUrlString(machineName, port, fileLocation);
         String responseBody = WebServerClient.request(urlString);
 
         FeatureCollection featureCollection = FeatureCollection.fromJson(responseBody);
@@ -238,5 +238,4 @@ public class FlightPlanner {
 
         return flightPlan;
     }
-
 }

@@ -52,4 +52,8 @@ public class WebServerClient {
         System.out.println(message);
         System.exit(1);
     }
+
+    public static String getUrlString(String machineName, String port, String fileLocation) {
+        return String.format("http://%s:%s/%s", machineName, port, fileLocation);
+    }
 }

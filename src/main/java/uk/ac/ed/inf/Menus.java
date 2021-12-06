@@ -38,7 +38,7 @@ public class Menus {
      * @see Shop
      */
     public Menus(String machineName, String port) {
-        String urlString = String.format("http://%s:%s/%s", machineName, port, MENUS_FILE_LOCATION);
+        String urlString = WebServerClient.getUrlString(machineName, port, MENUS_FILE_LOCATION);
         String responseBody = WebServerClient.request(urlString);
 
         Shop[] shops = new Gson().fromJson(responseBody, Shop[].class);
