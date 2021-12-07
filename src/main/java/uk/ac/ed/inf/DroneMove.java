@@ -1,7 +1,7 @@
 package uk.ac.ed.inf;
 
 /**
- * Represents a single made by the drone.
+ * Represents a single move made by the drone.
  */
 public class DroneMove {
     public final String orderNo;
