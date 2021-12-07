@@ -1,13 +1,13 @@
 package uk.ac.ed.inf.JsonTemplates;
 
 /**
+ * A template
  * Represents a shop participating in the drone lunch delivery service.
  * Contains the name, location of the shop as well as the items that it sells.
+ *
  */
 public class Shop {
-    public String name;
     public String location;
-
     public Item[] menu;
 
     /**
