@@ -9,17 +9,71 @@ import java.util.ArrayList;
 
 public class FlightPlan {
 
-    private ArrayList<DroneMove> flightPlan;
+    private ArrayList<DroneMove> plan;
+
+    public FlightPlan() {
+        this.plan = new ArrayList<>();
+    }
 
     public FlightPlan(ArrayList<DroneMove> flightPlan) {
-        this.flightPlan = flightPlan;
+        this.plan = flightPlan;
+    }
+
+    public FlightPlan(ArrayList<Point> flightPlanPoints, String orderNo) {
+        this.plan = new ArrayList<>();
+
+        LongLat currentPosition = new LongLat(flightPlanPoints.get(0));
+        LongLat targetPosition;
+        LongLat nextPostion;
+        int targetPositionNumber = 1;
+
+        while (targetPositionNumber < (flightPlanPoints.size())) {
+            targetPosition = new LongLat(flightPlanPoints.get(targetPositionNumber));
+
+            int angleToTarget = currentPosition.angleTo(targetPosition);
+            nextPostion = currentPosition.nextPosition(angleToTarget);
+
+            plan.add(new DroneMove(orderNo, currentPosition, nextPostion, angleToTarget));
+
+            currentPosition = currentPosition.nextPosition(angleToTarget);
+
+            if (currentPosition.closeTo(targetPosition)) {
+                targetPositionNumber++;
+            }
+        }
+    }
+
+    public int size(){
+        return this.plan.size();
+    }
+
+    public ArrayList<DroneMove> getPlan() {
+        return this.plan;
+    }
+
+    public double getPlanDistance() {
+        double distance = 0.0;
+
+        LongLat currentPosition;
+        LongLat nextPostion;
+
+        for (int i = 1; i < plan.size(); i++) {
+            currentPosition =  plan.get(i - 1).fromLongLat;
+            nextPostion = plan.get(i).fromLongLat;
+
+            distance += currentPosition.distanceTo(nextPostion);
+        }
+
+        distance += plan.get(plan.size()).fromLongLat.distanceTo(plan.get(plan.size()).toLongLat);
+
+        return distance;
     }
 
     public void toGeoJson(){
         ArrayList<Point> flightPlanPoints = new ArrayList<>();
-        flightPlanPoints.add(flightPlan.get(0).fromLongLat.toPoint());
+        flightPlanPoints.add(plan.get(0).fromLongLat.toPoint());
 
-        for (DroneMove move : flightPlan) {
+        for (DroneMove move : plan) {
             flightPlanPoints.add(move.toLongLat.toPoint());
         }
 

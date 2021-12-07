@@ -36,9 +36,9 @@ public class App
 
         FlightPlanner flightPlanner = new FlightPlanner(MACHINE_NAME, webserverPort);
 
-        ArrayList<DroneMove> flightPlan = flightPlanner.dayFlightPlanner(orders);
+        FlightPlan flightPlan = flightPlanner.dayFlightPlanner(orders);
 
-        new FlightPlan(flightPlan).toGeoJson();
+        flightPlan.toGeoJson();
     }
 
 }

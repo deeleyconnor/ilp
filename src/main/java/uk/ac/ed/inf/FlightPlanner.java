@@ -6,15 +6,14 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FlightPlanner {
 
-    public static final String RETURN_TO_APPLETON_ORDER_NO = "0GOHOME0";
+    public  final String RETURN_TO_APPLETON_ORDER_NO = "0GOHOME0";
     private final LongLat APPLETON_TOWER = new LongLat(-3.186874, 55.944494);
     private final int MAXIMUM_DRONE_MOVES = 1500;
-    private final static String LANDMARKS_FILE_LOCATION = "buildings/landmarks.geojson";
-    private final static String NO_FLY_ZONES_FILE_LOCATION = "buildings/no-fly-zones.geojson";
-    private final static int SINGLE_PICKUP_POINT = 1;
+    private final String LANDMARKS_FILE_LOCATION = "buildings/landmarks.geojson";
+    private final String NO_FLY_ZONES_FILE_LOCATION = "buildings/no-fly-zones.geojson";
+    private final int SINGLE_PICKUP_POINT = 1;
 
     private ArrayList<LongLat> landmarks = new ArrayList<>();
     private FeatureCollection noFlyZones;
@@ -32,20 +31,19 @@ public class FlightPlanner {
     }
 
     private FeatureCollection getGeoJsonData(String machineName, String port, String fileLocation) {
-        String urlString = WebServerClient.getUrlString(machineName, port, fileLocation);
-        String responseBody = WebServerClient.request(urlString);
+        String responseBody = WebServerClient.request(machineName, port, fileLocation);
 
         FeatureCollection featureCollection = FeatureCollection.fromJson(responseBody);
 
         return featureCollection;
     }
 
-    public ArrayList<DroneMove> dayFlightPlanner(ArrayList<Order> orders) {
+    public FlightPlan dayFlightPlanner(ArrayList<Order> orders) {
         orders.forEach( (order) -> this.orderFlightPlanner(order));
 
-        ArrayList<DroneMove> flightPlan = new ArrayList<>();
+        FlightPlan flightPlan = new FlightPlan();
 
-        ArrayList<DroneMove> returnFlightPlan = new ArrayList<>();
+        FlightPlan returnFlightPlan = new FlightPlan();
 
         LongLat currentPos = APPLETON_TOWER;
         int movesAvailable = MAXIMUM_DRONE_MOVES;
@@ -53,7 +51,7 @@ public class FlightPlanner {
         boolean flightPlanComplete = false;
 
         while (!flightPlanComplete) {
-            ArrayList<DroneMove> opitimalOrderFlightPlanToStart = new ArrayList<>();
+            FlightPlan opitimalOrderFlightPlanToStart = new FlightPlan();
             double optimalOrderValue = Double.MIN_VALUE;
             Order optimalOrder = null;
             for (Order order : orders) {
@@ -61,7 +59,7 @@ public class FlightPlanner {
                 {
                     ArrayList<Point> currentOrderStartFlightPath = twoPointsFlightPlanner(currentPos, order.getStartLocation());
                     currentOrderStartFlightPath.add(order.getStartLocation().toPoint());
-                    ArrayList<DroneMove> currentOrderStartFlightPlan = (convertPointsToFlightPlan(currentOrderStartFlightPath, order.getOrderNo()));
+                    FlightPlan currentOrderStartFlightPlan = new FlightPlan(currentOrderStartFlightPath, order.getOrderNo());
 
                     int orderAndReturnMoveCount = currentOrderStartFlightPlan.size() + order.getOrderAndReturnFlightPlanMoveCount();
 
@@ -78,19 +76,17 @@ public class FlightPlanner {
             }
 
             if (optimalOrder != null) {
-                flightPlan.addAll(opitimalOrderFlightPlanToStart);
-                flightPlan.addAll(optimalOrder.getOrderFlightPlan());
+                flightPlan.getPlan().addAll(opitimalOrderFlightPlanToStart.getPlan());
+                flightPlan.getPlan().addAll(optimalOrder.getOrderFlightPlan().getPlan());
                 optimalOrder.complete();
                 movesAvailable -= opitimalOrderFlightPlanToStart.size() + optimalOrder.getOrderFlightPlanMoveCount();
                 returnFlightPlan = optimalOrder.getReturnFlightPlan();
             }
             else {
                 flightPlanComplete = true;
-                flightPlan.addAll(returnFlightPlan);
+                flightPlan.getPlan().addAll(returnFlightPlan.getPlan());
             }
         }
-
-        System.out.println();
 
         return flightPlan;
     }
@@ -116,9 +112,9 @@ public class FlightPlanner {
         ArrayList<Point> orderReturnFlightPlan = twoPointsFlightPlanner(lastPoint,APPLETON_TOWER);
         orderReturnFlightPlan.add(APPLETON_TOWER.toPoint());
 
-        order.setOrderFlightPlan(convertPointsToFlightPlan(orderFlightPlan, order.getOrderNo()));
+        order.setOrderFlightPlan(new FlightPlan(orderFlightPlan, order.getOrderNo()));
 
-        order.setReturnFlightPlan(convertPointsToFlightPlan(orderReturnFlightPlan, RETURN_TO_APPLETON_ORDER_NO));
+        order.setReturnFlightPlan(new FlightPlan(orderReturnFlightPlan, RETURN_TO_APPLETON_ORDER_NO));
     }
 
     private ArrayList<Point> twoPointsFlightPlanner(LongLat startLocation, LongLat finishLocation) {
@@ -211,31 +207,5 @@ public class FlightPlanner {
         }
 
         return true;
-    }
-
-    private ArrayList<DroneMove> convertPointsToFlightPlan(ArrayList<Point> flightPlanPoints, String orderNo) {
-        ArrayList<DroneMove> flightPlan = new ArrayList<>();
-
-        LongLat currentPosition = new LongLat(flightPlanPoints.get(0));
-        LongLat targetPosition;
-        LongLat nextPostion;
-        int targetPositionNumber = 1;
-
-        while (targetPositionNumber < (flightPlanPoints.size())) {
-            targetPosition = new LongLat(flightPlanPoints.get(targetPositionNumber));
-
-            int angleToTarget = currentPosition.angleTo(targetPosition);
-            nextPostion = currentPosition.nextPosition(angleToTarget);
-
-            flightPlan.add(new DroneMove(orderNo, currentPosition, nextPostion, angleToTarget));
-
-            currentPosition = currentPosition.nextPosition(angleToTarget);
-
-            if (currentPosition.closeTo(targetPosition)) {
-                targetPositionNumber++;
-            }
-        }
-
-        return flightPlan;
     }
 }

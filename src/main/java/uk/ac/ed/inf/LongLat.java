@@ -38,7 +38,7 @@ public class LongLat {
     public final double latitude;
 
     /**
-     * Creates an instance of the LongLat Class.
+     * Creates an instance of the LongLat Class using longitude and latitude.
      *
      * @param longitude The longitude coordinate of the location. It is the measurement east or west of the prime
      *                  meridian.
@@ -49,6 +49,12 @@ public class LongLat {
         this.latitude = latitude;
     }
 
+    /**
+     * Creates an instance of the LongLat Class using a point.
+     *
+     * @param point A point that represents a location
+     * @see Point
+     */
     public LongLat (Point point) {
         this.longitude = point.longitude();
         this.latitude = point.latitude();
@@ -129,10 +135,4 @@ public class LongLat {
     public Point toPoint() {
         return Point.fromLngLat(this.longitude, this.latitude);
     }
-
-    @Override
-    public String toString() {
-        return String.format("Longitude: %s and Latitude: %s", this.longitude,this.latitude);
-    }
-
 }

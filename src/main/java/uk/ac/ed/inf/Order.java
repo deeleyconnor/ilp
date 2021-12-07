@@ -3,6 +3,9 @@ package uk.ac.ed.inf;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * Represents a lunch order.
+ */
 public class Order {
     private String orderNo;
     private String customer;
@@ -13,12 +16,13 @@ public class Order {
     private ArrayList<LongLat> pickupLocations = new ArrayList<>();
     private int orderPrice;
 
-    private ArrayList<DroneMove> orderFlightPlan;
-    private ArrayList<DroneMove> returnFlightPlan;
+    private FlightPlan orderFlightPlan;
+    private FlightPlan returnFlightPlan;
 
     private boolean completed = false;
 
     /**
+     *
      *
      * @param orderNo
      * @param customer
@@ -38,11 +42,11 @@ public class Order {
         setOrderPrice(menus);
     }
 
-    public void setOrderFlightPlan(ArrayList<DroneMove> orderFlightPlan) {
+    public void setOrderFlightPlan(FlightPlan orderFlightPlan) {
         this.orderFlightPlan = orderFlightPlan;
     }
 
-    public void setReturnFlightPlan(ArrayList<DroneMove> returnFlightPlan) {
+    public void setReturnFlightPlan(FlightPlan returnFlightPlan) {
         this.returnFlightPlan = returnFlightPlan;
     }
 
@@ -78,7 +82,7 @@ public class Order {
         return  this.orderFlightPlan.size();
     }
 
-    public ArrayList<DroneMove> getOrderFlightPlan() {
+    public FlightPlan getOrderFlightPlan() {
        return this.orderFlightPlan;
     }
 
@@ -86,7 +90,7 @@ public class Order {
         return  this.orderFlightPlan.size() + this.returnFlightPlan.size();
     }
 
-    public ArrayList<DroneMove> getReturnFlightPlan() {
+    public FlightPlan getReturnFlightPlan() {
         return this.returnFlightPlan;
     }
 
@@ -95,7 +99,7 @@ public class Order {
     }
 
     public LongLat getStartLocation() {
-        return orderFlightPlan.get(0).fromLongLat;
+        return orderFlightPlan.getPlan().get(0).fromLongLat;
     }
 
     public double getOrderValue(int moveCountToStartLocation) {
