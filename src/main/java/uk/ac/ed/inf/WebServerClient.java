@@ -16,11 +16,15 @@ public class WebServerClient {
      * This method is used to make a request to our webserver and return it to a class. If a request fails then the
      * system will exit due to this being a fatal error.
      *
-     * @param urlString The target url for the request.
+     * @param machineName The name of the machine which the server is running on.
+     * @param port The port which the server is running on.
+     * @param fileLocation The location of the target file on the server.
      * @return The body of the response to the request. Note null is the default response but will never be returned
      *         as the system will exit if the request fails.
      */
-    public static String request(String urlString) {
+    public static String request(String machineName, String port, String fileLocation) {
+        String urlString = getUrlString(machineName, port, fileLocation);
+
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlString)).build();
 
         try {
@@ -32,7 +36,6 @@ public class WebServerClient {
             else {
                 failedHttpRequestExit("Response Status Code " + response.statusCode());
             }
-
         }
         catch (Exception e) {
             failedHttpRequestExit(e);
@@ -53,7 +56,15 @@ public class WebServerClient {
         System.exit(1);
     }
 
-    public static String getUrlString(String machineName, String port, String fileLocation) {
+    /**
+     * This method combines a machine name, port and file location into a url to be used for a request.
+     *
+     * @param machineName The name of the machine which the server is running on.
+     * @param port The port which the server is running on.
+     * @param fileLocation The location of the file on the server.
+     * @return A string of a url to be used for a request.
+     */
+    private static String getUrlString(String machineName, String port, String fileLocation) {
         return String.format("http://%s:%s/%s", machineName, port, fileLocation);
     }
 }
