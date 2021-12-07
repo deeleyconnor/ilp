@@ -1,18 +1,15 @@
-package uk.ac.ed.inf.JsonTemplates;
+package uk.ac.ed.inf;
 
 /**
- * A template
- * Represents a shop participating in the drone lunch delivery service.
- * Contains the name, location of the shop as well as the items that it sells.
- *
+ * Represents a Shop. This class is used for parsing a JSON file menus.json in the menus folder. Contains the location
+ * of the shop as well as the items that it sells.
  */
 public class Shop {
     public String location;
     public Item[] menu;
 
     /**
-     * Represents an item sold by the shop.
-     * Contains the name of the item as well as the price in pence.
+     * Represents an item sold by the shop. Contains the name of the item as well as the price in pence.
      */
     public static class Item {
         public String item;

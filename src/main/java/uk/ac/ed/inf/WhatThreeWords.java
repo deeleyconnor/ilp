@@ -1,7 +1,8 @@
 package uk.ac.ed.inf;
 
 /**
- * Represents a WhatThreeWords address. This class is used for parsing a JSON file of the words folder.
+ * Represents a WhatThreeWords address. This class is used for parsing any of the JSON files details.json in the words
+ * folder. Contains the coordinates that the WhatThreeWords address represents.
  */
 public class WhatThreeWords {
     private Location coordinates;
@@ -16,7 +17,7 @@ public class WhatThreeWords {
     }
 
     /**
-     * This method converts the WhatThreeWords coordinates into a LongLat object.
+     * This method converts the WhatThreeWords address coordinates into a LongLat object.
      *
      * @return A LongLat object of the location of the WhatThreeWords address.
      */
