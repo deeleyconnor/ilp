@@ -76,8 +76,8 @@ public class WebServerClient {
      * @param <T> Generic parameter due to some message being strings and others being exceptions.
      */
     private static <T> void failedHttpRequestExit(T message) {
-        System.out.println("Http Request Failed");
-        System.out.println(message);
+        System.err.println("Http Request Failed");
+        System.err.println(message);
         System.exit(1);
     }
 }

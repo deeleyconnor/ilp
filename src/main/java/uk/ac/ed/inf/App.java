@@ -12,9 +12,9 @@ public class App
     /**
      * This method takes a date to create a flight plan for the drone on a certain day.
      *
-     * @param day The day of the month
-     * @param month The month
-     * @param year
+     * @param day The day of the lunch orders delivery flight plan to be created.
+     * @param month The month of the lunch orders delivery flight plan to be created.
+     * @param year The year of the lunch orders delivery flight plan to be created.
      * @param webserverPort The port that the webserver is running on.
      * @param databasePort The port that the database is running on.
      */

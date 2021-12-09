@@ -34,7 +34,8 @@ public class DatabaseClient {
     private Statement statement;
 
     /**
-     *
+     * This method creates an instance of the database client. It establishes a connection to the database and also
+     * prepares a couple of statements which will be used to interact with the database.
      *
      * @param machineName The name of the machine which the database is running on.
      * @param port The port which the database is running on.
@@ -55,11 +56,12 @@ public class DatabaseClient {
     }
 
     /**
+     * This method returns a list of orders objects from a given date.
      *
-     * @param day
-     * @param month
-     * @param year
-     * @return
+     * @param day The day of the orders being retrieved.
+     * @param month The month of the orders being retrieved.
+     * @param year The year of the orders being retrieved.
+     * @return A list of all the orders from a given date.
      */
     public ArrayList<Order> getOrders(String day, String month, String year) {
         String date = String.format("%s-%s-%s", year,month,day);
@@ -85,7 +87,13 @@ public class DatabaseClient {
         return orders;
     }
 
-    private ArrayList<String> getOrderDetails(String orderNo) throws SQLException {
+    /**
+     * This method gets the names of items in an order given the order number from the orderDetails table.
+     *
+     * @param orderNo The order number.
+     * @return A list of all the item names that are in the order.
+     */
+    private ArrayList<String> getOrderDetails(String orderNo) {
         ArrayList<String> items = new ArrayList<>();
 
         try {
@@ -192,8 +200,8 @@ public class DatabaseClient {
      * @param message The reason for the SQL exception.
      */
     private static void sqlExceptionHandler(SQLException message) {
-        System.out.println("SQL Exception");
-        System.out.println(message);
+        System.err.println("SQL Exception");
+        System.err.println(message);
         System.exit(1);
     }
 }
