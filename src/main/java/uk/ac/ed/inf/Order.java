@@ -54,9 +54,9 @@ public class Order {
     }
 
     /**
+     * This method sets the flight plan to return to Appleton tower once the order is complete.
      *
-     *
-     * @param returnFlightPlan
+     * @param returnFlightPlan The flight plan required to return to Appleton tower after completion of the flight plan.
      */
     public void setReturnFlightPlan(FlightPlan returnFlightPlan) {
         this.returnFlightPlan = returnFlightPlan;
@@ -81,33 +81,37 @@ public class Order {
     }
 
     /**
+     * This method is used to convert the list of item names in the order into a total price for the order.
      *
-     *
-     * @param menus
+     * @param menus the menus that are available to the delivery service.
      */
     private void setOrderPrice(Menus menus) {
         this.orderPrice = menus.getDeliveryCost(items);
     }
 
     /**
+     * This method is used to get the number of drone moves in the flight plan.
      *
-     * @return
+     * @return The number of drone moves to complete the order.
      */
     public int getOrderFlightPlanMoveCount() {
         return  this.orderFlightPlan.size();
     }
 
     /**
+     * This method is used to get the order flight plan.
      *
-     * @return
+     * @return The flight plan to complete the order.
      */
     public FlightPlan getOrderFlightPlan() {
        return this.orderFlightPlan;
     }
 
     /**
+     * This method is used to get the number of drone moves in the flight plan to complete the order as well as the
+     * number of moves to return to Appleton tower.
      *
-     * @return
+     * @return The number of drone moves to complete the order and return to Appleton tower.
      */
     public int getOrderAndReturnFlightPlanMoveCount() {
         return  this.orderFlightPlan.size() + this.returnFlightPlan.size();
@@ -141,10 +145,12 @@ public class Order {
     }
 
     /**
+     * This method is used to assign an estimated added value for completing the order against the number of drone
+     * moves that are required to complete it. This value is used for picking the best order to do next in the
+     * flight planner.
      *
-     *
-     * @param moveCountToStartLocation
-     * @return
+     * @param moveCountToStartLocation The moves required to get to the first pick up location.
+     * @return Estimated added value of completing the order against cost in moves.
      */
     public double getOrderValue(int moveCountToStartLocation) {
         double totalMoves = this.getOrderFlightPlanMoveCount() + moveCountToStartLocation;
@@ -160,7 +166,7 @@ public class Order {
     }
 
     /**
-     * This method is used to
+     * This method is used to find out if the order is completed by the daily flight plan.
      *
      * @return True if the order has been completed
      */

@@ -6,6 +6,9 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to create flight plans.
+ */
 public class FlightPlanner {
 
     public  final String RETURN_TO_APPLETON_ORDER_NO = "0GOHOME0";
@@ -15,9 +18,12 @@ public class FlightPlanner {
     private final String NO_FLY_ZONES_FILE_LOCATION = "buildings/no-fly-zones.geojson";
     private final int SINGLE_PICKUP_POINT = 1;
 
-    private ArrayList<LongLat> landmarks = new ArrayList<>();
+    private final ArrayList<LongLat> landmarks = new ArrayList<>();
     private FeatureCollection noFlyZones;
 
+    /**
+     *
+     */
     public FlightPlanner() {
         FeatureCollection landmarksFeature = getGeoJsonData(LANDMARKS_FILE_LOCATION);
 
@@ -33,13 +39,18 @@ public class FlightPlanner {
     private FeatureCollection getGeoJsonData(String fileLocation) {
         String responseBody = WebServerClient.request(fileLocation);
 
-        FeatureCollection featureCollection = FeatureCollection.fromJson(responseBody);
-
-        return featureCollection;
+        return FeatureCollection.fromJson(responseBody);
     }
 
+    /**
+     * This method takes a list of orders which each have a flight plan and converts them into a single flight plan
+     * including as many of the orders as possible while being less drone moves than MAXIMUM_DRONE_MOVES.
+     *
+     * @param orders The list of orders for the day.
+     * @return A combined flight plan
+     */
     public FlightPlan dayFlightPlanner(ArrayList<Order> orders) {
-        orders.forEach( (order) -> this.orderFlightPlanner(order));
+        orders.forEach(this::orderFlightPlanner);
 
         FlightPlan flightPlan = new FlightPlan();
 
@@ -76,10 +87,12 @@ public class FlightPlanner {
             }
 
             if (optimalOrder != null) {
+                ArrayList<DroneMove> optimalFlightPlan = optimalOrder.getOrderFlightPlan().getPlan();
                 flightPlan.getPlan().addAll(opitimalOrderFlightPlanToStart.getPlan());
-                flightPlan.getPlan().addAll(optimalOrder.getOrderFlightPlan().getPlan());
+                flightPlan.getPlan().addAll(optimalFlightPlan);
                 optimalOrder.complete();
                 movesAvailable -= opitimalOrderFlightPlanToStart.size() + optimalOrder.getOrderFlightPlanMoveCount();
+                currentPos = optimalFlightPlan.get(optimalFlightPlan.size() - 1).toLongLat;
                 returnFlightPlan = optimalOrder.getReturnFlightPlan();
             }
             else {
@@ -91,6 +104,11 @@ public class FlightPlanner {
         return flightPlan;
     }
 
+    /**
+     * This method creates a flight path for an order.
+     *
+     * @param order
+     */
     private void orderFlightPlanner(Order order) {
         ArrayList<Point> orderFlightPlan;
 

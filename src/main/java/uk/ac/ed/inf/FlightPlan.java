@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class FlightPlan {
 
-    private ArrayList<DroneMove> plan;
+    private final ArrayList<DroneMove> plan;
 
     /**
      * This creates an instance of a flight plan with a blank plan.
@@ -37,16 +37,16 @@ public class FlightPlan {
 
         LongLat currentPosition = new LongLat(flightPlanPoints.get(0));
         LongLat targetPosition;
-        LongLat nextPostion;
+        LongLat nextPosition;
         int targetPositionNumber = 1;
 
         while (targetPositionNumber < (flightPlanPoints.size())) {
             targetPosition = new LongLat(flightPlanPoints.get(targetPositionNumber));
 
             int angleToTarget = currentPosition.angleTo(targetPosition);
-            nextPostion = currentPosition.nextPosition(angleToTarget);
+            nextPosition = currentPosition.nextPosition(angleToTarget);
 
-            plan.add(new DroneMove(orderNo, currentPosition, nextPostion, angleToTarget));
+            plan.add(new DroneMove(orderNo, currentPosition, nextPosition, angleToTarget));
 
             currentPosition = currentPosition.nextPosition(angleToTarget);
 
@@ -56,7 +56,7 @@ public class FlightPlan {
                 // Adds hover move if required.
                 if (targetPositionNumber < (flightPlanPoints.size())) {
                     if (isHovering(targetPosition, new LongLat(flightPlanPoints.get(targetPositionNumber)))) {
-                        plan.add(new DroneMove(orderNo, nextPostion, nextPostion, LongLat.HOVER_ANGLE));
+                        plan.add(new DroneMove(orderNo, nextPosition, nextPosition, LongLat.HOVER_ANGLE));
                     }
                 }
             }
@@ -72,12 +72,7 @@ public class FlightPlan {
      * @return True if hover is required otherwise false.
      */
     private boolean isHovering(LongLat targetPosition, LongLat nextTargetPosition) {
-        if (targetPosition.closeTo(nextTargetPosition)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return targetPosition.closeTo(nextTargetPosition);
     }
 
     /**
@@ -116,7 +111,7 @@ public class FlightPlan {
 
         LineString flightPlanLineString = LineString.fromLngLats(flightPlanPoints);
 
-        Feature flightPlanFeature = Feature.fromGeometry((Geometry) flightPlanLineString);
+        Feature flightPlanFeature = Feature.fromGeometry(flightPlanLineString);
 
         FeatureCollection flightPlanFeatureCollection = FeatureCollection.fromFeature(flightPlanFeature);
 
@@ -125,7 +120,7 @@ public class FlightPlan {
             FileWriter myWriter = new FileWriter(fileName);
             myWriter.write(flightPlanFeatureCollection.toJson());
             myWriter.close();
-            System.out.println(String.format("Successfully wrote to the file \"%s\".", fileName));
+            System.out.printf("Successfully wrote to the file \"%s\".%n", fileName);
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();

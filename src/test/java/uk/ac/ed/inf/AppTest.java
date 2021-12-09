@@ -19,7 +19,7 @@ public class AppTest {
 
     @Test
     public void testApp() throws SQLException {
-        App.main("24", "05", "2023", "80", "1527");
+        App.main("24", "05", "2022", "80", "1527");
 
 
         assertTrue(true);
