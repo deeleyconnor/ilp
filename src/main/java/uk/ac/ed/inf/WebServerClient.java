@@ -10,20 +10,35 @@ import java.net.http.HttpResponse;
  */
 public class WebServerClient {
 
+    private static final String DEFAULT_MACHINE_NAME = "localhost";
+    private static final String DEFAULT_PORT = "80";
+
     public static final HttpClient httpClient = HttpClient.newHttpClient();
+
+    private static String machineName = DEFAULT_MACHINE_NAME;
+    private static String port = DEFAULT_PORT;
+
+    /**
+     * This method sets the static parameters machineName and port so that any class can access the webserver.
+     *
+     * @param machineName The name of the machine which the server is running on.
+     * @param port The port which the server is running on.
+     */
+    public static void setupWebServerClient(String machineName, String port) {
+        WebServerClient.machineName = machineName;
+        WebServerClient.port = port;
+    }
 
     /**
      * This method is used to make a request to our webserver and return it to a class. If a request fails then the
      * system will exit due to this being a fatal error.
      *
-     * @param machineName The name of the machine which the server is running on.
-     * @param port The port which the server is running on.
      * @param fileLocation The location of the target file on the server.
      * @return The body of the response to the request. Note null is the default response but will never be returned
      *         as the system will exit if the request fails.
      */
-    public static String request(String machineName, String port, String fileLocation) {
-        String urlString = getUrlString(machineName, port, fileLocation);
+    public static String request(String fileLocation) {
+        String urlString = getUrlString(fileLocation);
 
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlString)).build();
 
@@ -59,12 +74,10 @@ public class WebServerClient {
     /**
      * This method combines a machine name, port and file location into a url to be used for a request.
      *
-     * @param machineName The name of the machine which the server is running on.
-     * @param port The port which the server is running on.
      * @param fileLocation The location of the file on the server.
      * @return A string of a url to be used for a request.
      */
-    private static String getUrlString(String machineName, String port, String fileLocation) {
+    private static String getUrlString(String fileLocation) {
         return String.format("http://%s:%s/%s", machineName, port, fileLocation);
     }
 }

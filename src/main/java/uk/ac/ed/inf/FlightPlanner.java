@@ -18,8 +18,8 @@ public class FlightPlanner {
     private ArrayList<LongLat> landmarks = new ArrayList<>();
     private FeatureCollection noFlyZones;
 
-    public FlightPlanner(String machineName, String port) {
-        FeatureCollection landmarksFeature = getGeoJsonData(machineName, port, LANDMARKS_FILE_LOCATION);
+    public FlightPlanner() {
+        FeatureCollection landmarksFeature = getGeoJsonData(LANDMARKS_FILE_LOCATION);
 
         for (Feature landmark: landmarksFeature.features()) {
             Point landmarkPoint = (Point)landmark.geometry();
@@ -27,11 +27,11 @@ public class FlightPlanner {
             landmarks.add(new LongLat(landmarkPoint.longitude(), landmarkPoint.latitude()));
         }
 
-        noFlyZones = getGeoJsonData(machineName, port, NO_FLY_ZONES_FILE_LOCATION);
+        noFlyZones = getGeoJsonData(NO_FLY_ZONES_FILE_LOCATION);
     }
 
-    private FeatureCollection getGeoJsonData(String machineName, String port, String fileLocation) {
-        String responseBody = WebServerClient.request(machineName, port, fileLocation);
+    private FeatureCollection getGeoJsonData(String fileLocation) {
+        String responseBody = WebServerClient.request(fileLocation);
 
         FeatureCollection featureCollection = FeatureCollection.fromJson(responseBody);
 

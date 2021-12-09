@@ -37,16 +37,14 @@ public class Menus {
 
     /**
      * Creates an instance of the Menus class. Data for the menus is requested using the WebServerClient request method
-     * from http://machineName:port/MENUS_FILE_LOCATION and are stored as a collection of shops.
+     * from MENUS_FILE_LOCATION and are stored as a collection of shops.
      *
-     * @param machineName The name of the machine which the server is running on.
-     * @param port The port which the server is running on
      * @see WebServerClient
      * @see Shop
      * @see MenusItem
      */
-    public Menus(String machineName, String port) {
-        String responseBody = WebServerClient.request(machineName, port, MENUS_FILE_LOCATION);
+    public Menus() {
+        String responseBody = WebServerClient.request(MENUS_FILE_LOCATION);
 
         Shop[] shops = new Gson().fromJson(responseBody, Shop[].class);
 

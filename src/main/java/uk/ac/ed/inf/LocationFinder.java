@@ -2,7 +2,7 @@ package uk.ac.ed.inf;
 
 import com.google.gson.Gson;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  *
@@ -10,18 +10,17 @@ import java.util.Hashtable;
 public class LocationFinder {
     private final static String WHAT_3_WORDS_FILE_LOCATION = "words/%s/details.json";
 
-    private final String machineName;
-    private final String port;
+    private HashMap<String, LongLat> locations;
 
-    private Hashtable<String, LongLat> locations;
-
-    public LocationFinder(String machineName, String port) {
-        this.machineName = machineName;
-        this.port = port;
-
-        locations = new Hashtable<>();
+    public LocationFinder() {
+        locations = new HashMap<>();
     }
 
+    /**
+     *
+     * @param words The What Three Words Address.
+     * @return
+     */
     public LongLat findLocation(String words) {
         LongLat location = locations.get(words);
 
@@ -35,7 +34,7 @@ public class LocationFinder {
 
     private LongLat findNewLocation(String words) {
         String fileLocation = getWordsFileLocation(words);
-        String responseBody = WebServerClient.request(machineName, port, fileLocation);
+        String responseBody = WebServerClient.request(fileLocation);
         WhatThreeWords whatThreeWords = new Gson().fromJson(responseBody, WhatThreeWords.class);
         LongLat location = whatThreeWords.toLongLat();
 

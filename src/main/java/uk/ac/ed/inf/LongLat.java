@@ -52,7 +52,7 @@ public class LongLat {
     /**
      * Creates an instance of the LongLat Class using a point.
      *
-     * @param point A point that represents a location
+     * @param point A point that has a longitude and latitude coordinate of the location.
      * @see Point
      */
     public LongLat (Point point) {
@@ -100,6 +100,12 @@ public class LongLat {
         return distance < CLOSE_DISTANCE;
     }
 
+    /**
+     * This method calculates the angle from this location to the target to the nearest 10.
+     *
+     * @param target The target location that we want to know the angle to.
+     * @return An angle in degrees between 0 and 350 which is a multiple of 10.
+     */
     public int angleTo(LongLat target) {
         double longitudeDiff = target.longitude - this.longitude;
         double latitudeDiff = target.latitude - this.latitude;
@@ -108,6 +114,9 @@ public class LongLat {
 
         if (angle < 0) {
             angle += 360;
+        }
+        else if (angle == 360) {
+            angle = 0;
         }
 
         return angle;
@@ -132,6 +141,12 @@ public class LongLat {
         return new LongLat(newLongitude,newLatitude);
     }
 
+    /**
+     * This method gives the point equivalent of this LongLat object.
+     *
+     * @return A new Point with the same longitude and latitude as this LongLat object.
+     * @see Point
+     */
     public Point toPoint() {
         return Point.fromLngLat(this.longitude, this.latitude);
     }

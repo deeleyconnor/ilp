@@ -1,6 +1,5 @@
 package uk.ac.ed.inf;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -9,36 +8,38 @@ import java.util.ArrayList;
  */
 public class App 
 {
-
-    private static final String MACHINE_NAME = "localhost";
+    public static final String MACHINE_NAME = "localhost";
 
     /**
+     * This method takes a date to create a fligh
      *
      * @param day
      * @param month
      * @param year
-     * @param webserverPort
-     * @param databasePort
+     * @param webserverPort The port that the webserver is running on.
+     * @param databasePort The port that the database is running on.
      * @throws SQLException
      */
     public static void main(String day, String month, String year,String webserverPort, String databasePort) throws SQLException {
         System.out.println( "System Started!" );
 
-        LocationFinder locationFinder = new LocationFinder(MACHINE_NAME, webserverPort);
-
+        WebServerClient.setupWebServerClient(MACHINE_NAME, webserverPort);
         DatabaseClient databaseClient = new DatabaseClient(MACHINE_NAME, databasePort);
 
-        Menus menus = new Menus(MACHINE_NAME, webserverPort);
+        LocationFinder locationFinder = new LocationFinder();
+
+        System.out.println("Getting Order Data");
+
+        Menus menus = new Menus();
 
         ArrayList<Order> orders = databaseClient.getOrders(day,month,year);
-
         orders.forEach( (order) -> order.setOrderObjectives(locationFinder, menus));
 
-        FlightPlanner flightPlanner = new FlightPlanner(MACHINE_NAME, webserverPort);
-
+        System.out.println();
+        FlightPlanner flightPlanner = new FlightPlanner();
         FlightPlan flightPlan = flightPlanner.dayFlightPlanner(orders);
 
+        System.out.println("Creating Json Files");
         flightPlan.toGeoJson();
     }
-
 }
