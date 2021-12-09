@@ -1,10 +1,12 @@
 package uk.ac.ed.inf;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * This class is used for connecting to the database to request data and create new tables.
+ */
 public class DatabaseClient {
 
     private static final String DATABASE = "derbyDB";
@@ -29,11 +31,14 @@ public class DatabaseClient {
     private Connection conn;
     private PreparedStatement psOrdersQuery;
     private PreparedStatement psOrderDetailsQuery;
-    private PreparedStatement psInsertDeliveryQuery;
-    private PreparedStatement psInsertDroneMoveQuery;
     private Statement statement;
 
-    //PLease Handle SQL Exception
+    /**
+     *
+     *
+     * @param machineName The name of the machine which the database is running on.
+     * @param port The port which the database is running on.
+     */
     public DatabaseClient(String machineName, String port) {
         String jdbcString = String.format("jdbc:derby://%s:%s/%s", machineName, port, DATABASE);
 
@@ -49,50 +54,75 @@ public class DatabaseClient {
         }
     }
 
-    public ArrayList<Order> getOrders(String day, String month, String year) throws SQLException {
+    /**
+     *
+     * @param day
+     * @param month
+     * @param year
+     * @return
+     */
+    public ArrayList<Order> getOrders(String day, String month, String year) {
         String date = String.format("%s-%s-%s", year,month,day);
-
-        psOrdersQuery.setString(1,date);
-
         ArrayList<Order> orders = new ArrayList<>();
-        ResultSet rs = psOrdersQuery.executeQuery();
-        while (rs.next()) {
-            String orderNo = rs.getString("orderNo");
-            String customer = rs.getString("customer");
-            String deliverTo = rs.getString("deliverTo");
 
-            ArrayList<String> items = getOrderDetails(orderNo);
+        try {
+            psOrdersQuery.setString(1,date);
+            ResultSet rs = psOrdersQuery.executeQuery();
 
-            orders.add(new Order(orderNo, customer, items, deliverTo));
+            while (rs.next()) {
+                String orderNo = rs.getString("orderNo");
+                String deliverTo = rs.getString("deliverTo");
+
+                ArrayList<String> items = getOrderDetails(orderNo);
+
+                orders.add(new Order(orderNo, items, deliverTo));
+            }
+        }
+        catch (SQLException e) {
+           sqlExceptionHandler(e);
         }
 
         return orders;
     }
 
     private ArrayList<String> getOrderDetails(String orderNo) throws SQLException {
-        psOrderDetailsQuery.setString(1,orderNo);
-
         ArrayList<String> items = new ArrayList<>();
-        ResultSet rs = psOrderDetailsQuery.executeQuery();
-        while (rs.next()) {
-            String item = rs.getString("item");
-            items.add(item);
+
+        try {
+            psOrderDetailsQuery.setString(1,orderNo);
+            ResultSet rs = psOrderDetailsQuery.executeQuery();
+
+            while (rs.next()) {
+                String item = rs.getString("item");
+                items.add(item);
+            }
+        }
+        catch (SQLException e) {
+            sqlExceptionHandler(e);
         }
 
         return items;
     }
 
+    /**
+     * This method creates and populates the deliveries table which contains information about every delivery that was
+     * made by the drone makes on the day.
+     *
+     * @param orders The orders for
+     */
     public void createDeliveriesTable(ArrayList<Order> orders) {
         newTable("deliveries",DROP_DELIVERY_TABLE_STATEMENT,CREATE_DELIVERY_TABLE_STATEMENT);
 
         try {
-            psInsertDeliveryQuery = conn.prepareStatement(INSERT_DELIVERY_QUERY);
+            PreparedStatement psInsertDeliveryQuery = conn.prepareStatement(INSERT_DELIVERY_QUERY);
 
             for (Order order: orders) {
-                psInsertDeliveryQuery.setString(1, order.getOrderNo());
-                psInsertDeliveryQuery.setString(2, order.getDeliverTo());
-                psInsertDeliveryQuery.setString(3, order.getOrderPrice());
-                psInsertDeliveryQuery.execute();
+                if (order.completed()) {
+                    psInsertDeliveryQuery.setString(1, order.getOrderNo());
+                    psInsertDeliveryQuery.setString(2, order.getDeliverTo());
+                    psInsertDeliveryQuery.setString(3, order.getOrderPrice());
+                    psInsertDeliveryQuery.execute();
+                }
             }
         }
         catch (SQLException e) {
@@ -102,12 +132,18 @@ public class DatabaseClient {
         System.out.println("Successfully created table \"deliveries\" in database.");
     }
 
+    /**
+     * This method create and populates the flightpath table which contains every drone move made by the drone while
+     * making the day's lunch deliveries.
+     *
+     * @param flightPlan The flight plan with the list of drone moves that the flightpath table will contain.
+     */
     public void createFlightPathTable(FlightPlan flightPlan) {
         newTable("flightpath", DROP_FLIGHT_PATH_TABLE_STATEMENT, CREATE_FLIGHT_PATH_TABLE_STATEMENT);
         ArrayList<DroneMove> droneMoves= flightPlan.getPlan();
 
         try {
-            psInsertDroneMoveQuery = conn.prepareStatement(INSERT_DRONE_MOVE_QUERY);
+            PreparedStatement psInsertDroneMoveQuery = conn.prepareStatement(INSERT_DRONE_MOVE_QUERY);
 
             for (DroneMove droneMove: droneMoves) {
                 psInsertDroneMoveQuery.setString(1, droneMove.orderNo);
@@ -126,16 +162,24 @@ public class DatabaseClient {
         System.out.println("Successfully created table \"flightpath\" in database.");
     }
 
+    /**
+     * This method creates a new table. If a table of this name already exists in the derbyDB database then it is
+     * deleted.
+     *
+     * @param tableName The name of the table that is being created.
+     * @param tableDropStatement SQL statement to drop the table.
+     * @param tableCreateStatement SQL statement to create the table.
+     */
     private void newTable(String tableName, String tableDropStatement, String tableCreateStatement) {
         try {
             DatabaseMetaData databaseMetaData = conn.getMetaData();
 
-            ResultSet resultSet = databaseMetaData.getTables(null, null, tableName,null);
+            ResultSet resultSet = databaseMetaData.getTables(null, null, tableName.toUpperCase(Locale.ROOT),null);
 
             if (resultSet.next()) {
                 statement.execute(tableDropStatement);
-                statement.execute(tableCreateStatement);
             }
+            statement.execute(tableCreateStatement);
         }
         catch (SQLException e) {
             sqlExceptionHandler(e);

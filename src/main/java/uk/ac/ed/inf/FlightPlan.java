@@ -91,7 +91,7 @@ public class FlightPlan {
             FileWriter myWriter = new FileWriter(fileName);
             myWriter.write(flightPlanFeatureCollection.toJson());
             myWriter.close();
-            System.out.println(String.format("Successfully wrote to the file %s.", fileName));
+            System.out.println(String.format("Successfully wrote to the file \"%s\".", fileName));
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
