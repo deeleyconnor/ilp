@@ -72,7 +72,7 @@ public class FlightPlan {
         return distance;
     }
 
-    public void toGeoJson(){
+    public void toGeoJson(String day, String month, String year){
         ArrayList<Point> flightPlanPoints = new ArrayList<>();
         flightPlanPoints.add(plan.get(0).fromLongLat.toPoint());
 
@@ -87,14 +87,14 @@ public class FlightPlan {
         FeatureCollection flightPlanFeatureCollection = FeatureCollection.fromFeature(flightPlanFeature);
 
         try {
-            FileWriter myWriter = new FileWriter("test.geojson");
+            String fileName = String.format("drone-%s-%s-%s.geojson", day,month,year);
+            FileWriter myWriter = new FileWriter(fileName);
             myWriter.write(flightPlanFeatureCollection.toJson());
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
+            System.out.println(String.format("Successfully wrote to the file %s.", fileName));
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-
     }
 }

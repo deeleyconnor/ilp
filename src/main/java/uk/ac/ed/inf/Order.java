@@ -7,10 +7,10 @@ import java.util.HashSet;
  * Represents a lunch order.
  */
 public class Order {
-    private String orderNo;
-    private String customer;
-    private ArrayList<String> items;
-    private String deliverTo;
+    private final String orderNo;
+    private final String customer;
+    private final ArrayList<String> items;
+    private final String deliverTo;
 
     private LongLat deliveryLocation;
     private ArrayList<LongLat> pickupLocations = new ArrayList<>();
@@ -22,7 +22,7 @@ public class Order {
     private boolean completed = false;
 
     /**
-     *
+     * Creates an instance of Order
      *
      * @param orderNo
      * @param customer
@@ -94,8 +94,12 @@ public class Order {
         return this.returnFlightPlan;
     }
 
-    public int getOrderPrice() {
-        return this.orderPrice;
+    public String getOrderPrice() {
+        return String.valueOf(this.orderPrice);
+    }
+
+    public String getDeliverTo() {
+        return this.deliverTo;
     }
 
     /**

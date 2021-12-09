@@ -60,6 +60,16 @@ public class WebServerClient {
     }
 
     /**
+     * This method combines a machine name, port and file location into a url to be used for a request.
+     *
+     * @param fileLocation The location of the file on the server.
+     * @return A string of a url to be used for a request.
+     */
+    private static String getUrlString(String fileLocation) {
+        return String.format("http://%s:%s/%s", machineName, port, fileLocation);
+    }
+
+    /**
      * If a Http request fails it is a fatal error and thus we cannot recover from so the system will exit.
      *
      * @param message The reason why the Http request failed.
@@ -69,15 +79,5 @@ public class WebServerClient {
         System.out.println("Http Request Failed");
         System.out.println(message);
         System.exit(1);
-    }
-
-    /**
-     * This method combines a machine name, port and file location into a url to be used for a request.
-     *
-     * @param fileLocation The location of the file on the server.
-     * @return A string of a url to be used for a request.
-     */
-    private static String getUrlString(String fileLocation) {
-        return String.format("http://%s:%s/%s", machineName, port, fileLocation);
     }
 }

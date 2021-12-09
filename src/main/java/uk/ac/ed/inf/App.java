@@ -26,8 +26,6 @@ public class App
         WebServerClient.setupWebServerClient(MACHINE_NAME, webserverPort);
         DatabaseClient databaseClient = new DatabaseClient(MACHINE_NAME, databasePort);
 
-        //LocationFinder locationFinder = new LocationFinder();
-
         System.out.println("Getting Order Data");
 
         Menus menus = new Menus();
@@ -35,11 +33,11 @@ public class App
         ArrayList<Order> orders = databaseClient.getOrders(day,month,year);
         orders.forEach( (order) -> order.setOrderObjectives(menus));
 
-        System.out.println();
         FlightPlanner flightPlanner = new FlightPlanner();
         FlightPlan flightPlan = flightPlanner.dayFlightPlanner(orders);
 
-        System.out.println("Creating Json Files");
-        flightPlan.toGeoJson();
+        flightPlan.toGeoJson(day, month, year);
+        databaseClient.createDeliveriesTable(orders);
+        databaseClient.createFlightPathTable(flightPlan);
     }
 }

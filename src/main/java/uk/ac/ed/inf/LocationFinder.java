@@ -10,10 +10,12 @@ import java.util.HashMap;
 public class LocationFinder {
     private final static String WHAT_3_WORDS_FILE_LOCATION = "words/%s/details.json";
 
-    private static HashMap<String, LongLat> locations = new HashMap<>();
+    private final static HashMap<String, LongLat> locations = new HashMap<>();
 
     /**
-     * This method is used to convert a WhatThreeWords address into 
+     * This method is used to get the LongLat coordinates of a WhatThreeWords address. It first searches a HashMap of
+     * already retrieved locations if it is not contained there then it will search the webserver and put it in the
+     * HashMap to be retrieved again later if required.
      *
      * @param words The WhatThreeWords address that we want to know the LongLat coordinates.
      * @return The LongLat coordinates of the WhatThreeWords address.
@@ -41,9 +43,8 @@ public class LocationFinder {
         String fileLocation = getWordsFileLocation(words);
         String responseBody = WebServerClient.request(fileLocation);
         WhatThreeWords whatThreeWords = new Gson().fromJson(responseBody, WhatThreeWords.class);
-        LongLat location = whatThreeWords.toLongLat();
 
-        return location;
+        return whatThreeWords.toLongLat();
     }
 
     /**
