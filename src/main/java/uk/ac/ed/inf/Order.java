@@ -36,9 +36,9 @@ public class Order {
         this.deliverTo = deliverTo;
     }
 
-    public void setOrderObjectives(LocationFinder locationFinder, Menus menus) {
-        setDeliveryLocation(locationFinder);
-        setPickupLocations(locationFinder, menus);
+    public void setOrderObjectives(Menus menus) {
+        setDeliveryLocation();
+        setPickupLocations(menus);
         setOrderPrice(menus);
     }
 
@@ -50,15 +50,15 @@ public class Order {
         this.returnFlightPlan = returnFlightPlan;
     }
 
-    private void setDeliveryLocation(LocationFinder locationFinder) {
-        this.deliveryLocation = locationFinder.findLocation(deliverTo);
+    private void setDeliveryLocation() {
+        this.deliveryLocation = LocationFinder.findLocation(deliverTo);
     }
 
-    private void setPickupLocations(LocationFinder locationFinder, Menus menus) {
+    private void setPickupLocations(Menus menus) {
         HashSet<String> pickupLocationsWords = menus.getPickupLocations(items);
 
         for (String words : pickupLocationsWords) {
-            pickupLocations.add(locationFinder.findLocation(words));
+            pickupLocations.add(LocationFinder.findLocation(words));
         }
     }
 
@@ -98,9 +98,15 @@ public class Order {
         return this.orderPrice;
     }
 
+    /**
+     * This method is used to get the starting position of flight plan used to complete this order.
+     *
+     * @return The LongLat coordinates of the first position in the order flight plan.
+     */
     public LongLat getStartLocation() {
         return orderFlightPlan.getPlan().get(0).fromLongLat;
     }
+
 
     public double getOrderValue(int moveCountToStartLocation) {
         double totalMoves = this.getOrderFlightPlanMoveCount() + moveCountToStartLocation;
@@ -108,10 +114,18 @@ public class Order {
         return this.orderPrice / totalMoves;
     }
 
+    /**
+     * This method marks this order as completed.
+     */
     public void complete() {
         this.completed = true;
     }
 
+    /**
+     * This method is used to
+     *
+     * @return
+     */
     public boolean completed() {
         return this.completed;
     }

@@ -5,23 +5,20 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 
 /**
- *
+ * This class is used to retrieve and store the LongLat positions of WhatThreeWord Addresses.
  */
 public class LocationFinder {
     private final static String WHAT_3_WORDS_FILE_LOCATION = "words/%s/details.json";
 
-    private HashMap<String, LongLat> locations;
-
-    public LocationFinder() {
-        locations = new HashMap<>();
-    }
+    private static HashMap<String, LongLat> locations = new HashMap<>();
 
     /**
+     * This method is used to convert a WhatThreeWords address into 
      *
-     * @param words The What Three Words Address.
-     * @return
+     * @param words The WhatThreeWords address that we want to know the LongLat coordinates.
+     * @return The LongLat coordinates of the WhatThreeWords address.
      */
-    public LongLat findLocation(String words) {
+    public static LongLat findLocation(String words) {
         LongLat location = locations.get(words);
 
         if (location == null) {
@@ -32,7 +29,15 @@ public class LocationFinder {
         return location;
     }
 
-    private LongLat findNewLocation(String words) {
+    /**
+     * This method is used to search the webserver for a WhatThreeWords address that is not currently contained in the
+     * HashMap of locations known.
+     *
+     * @param words The WhatThreeWords address that we want to know the LongLat coordinates.
+     * @return The LongLat coordinates of the WhatThreeWords address.
+     * @see WebServerClient
+     */
+    private static LongLat findNewLocation(String words) {
         String fileLocation = getWordsFileLocation(words);
         String responseBody = WebServerClient.request(fileLocation);
         WhatThreeWords whatThreeWords = new Gson().fromJson(responseBody, WhatThreeWords.class);
@@ -48,7 +53,7 @@ public class LocationFinder {
      * @param words The What3Words address.
      * @return The file location
      */
-    private String getWordsFileLocation(String words) {
+    private static String getWordsFileLocation(String words) {
         return String.format(WHAT_3_WORDS_FILE_LOCATION, words.replace(".","/"));
     }
 }

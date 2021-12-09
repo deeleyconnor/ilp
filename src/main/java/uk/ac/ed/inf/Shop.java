@@ -1,8 +1,8 @@
 package uk.ac.ed.inf;
 
 /**
- * Represents a Shop. This class is used for parsing a JSON file menus.json in the menus folder. Contains the location
- * of the shop as well as the items that it sells.
+ * This class represents a Shop. This class is used for parsing a JSON file menus.json in the menus folder. Contains
+ * the location of the shop as well as the items that it sells.
  */
 public class Shop {
     public String location;
