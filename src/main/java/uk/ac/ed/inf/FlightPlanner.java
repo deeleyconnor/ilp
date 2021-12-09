@@ -144,6 +144,8 @@ public class FlightPlanner {
             flightPlan.add(bestPoint);
         }
 
+        flightPlan.add(finishLocation.toPoint());
+
         return flightPlan;
     }
 
@@ -159,7 +161,7 @@ public class FlightPlanner {
         orderFlightPlan2.addAll(twoPointsFlightPlanner(pickupLocation.get(0),deliveryLocation));
         orderFlightPlan2.add(deliveryLocation.toPoint());
 
-        if (getFlightPlanDistance(orderFlightPlan1) < getFlightPlanDistance(orderFlightPlan2)) {
+        if (getFlightPlanEstimateDistance(orderFlightPlan1) < getFlightPlanEstimateDistance(orderFlightPlan2)) {
             return orderFlightPlan1;
         }
         else {
@@ -167,7 +169,14 @@ public class FlightPlanner {
         }
     }
 
-    private double getFlightPlanDistance(ArrayList<Point> path) {
+    /**
+     * This method converts a list of points that make a estimate flight plath into distance. Distance is measured as
+     * the euclidean distance between from each point to the next point totaled together.
+     *
+     * @param path The estimated flight path.
+     * @return The distance of the estimated flight path.
+     */
+    private double getFlightPlanEstimateDistance(ArrayList<Point> path) {
         double distance = 0.0;
 
         LongLat currentPosition;
@@ -183,10 +192,24 @@ public class FlightPlanner {
         return distance;
     }
 
+    /**
+     * This method converts to two LongLat objects into a Line2D object.
+     *
+     * @param start The LongLat coordinates of where the line will start.
+     * @param finish The LongLat coordinates of where the line will end.
+     * @return A Line2D object originating at start and finishing at finish.
+     */
     private Line2D makeLineFromLongLat(LongLat start, LongLat finish) {
         return new Line2D.Double(start.longitude, start.latitude, finish.longitude, finish.latitude);
     }
 
+    /**
+     * This method checks that a straight line between a position and a target position avoids the no fly
+     * zones.
+     *
+     * @param path A straight line between a position and a target position.
+     * @return True if path avoids the no fly zones otherwise returns False.
+     */
     private boolean avoidsNoFlyZones(Line2D path) {
         boolean intersect;
 

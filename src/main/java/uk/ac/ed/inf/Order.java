@@ -34,9 +34,9 @@ public class Order {
     }
 
     /**
-     * This method populates the field that the
+     * This method populates the field where the data was retrieved from the webserver.
      *
-     * @param menus
+     * @param menus the menus that are available to the delivery service.
      */
     public void setOrderObjectives(Menus menus) {
         setDeliveryLocation();
@@ -45,9 +45,9 @@ public class Order {
     }
 
     /**
+     * This method sets the flight plan required to complete the order.
      *
-     *
-     * @param orderFlightPlan The flight plan from the first
+     * @param orderFlightPlan The flight plan required to complete the order.
      */
     public void setOrderFlightPlan(FlightPlan orderFlightPlan) {
         this.orderFlightPlan = orderFlightPlan;

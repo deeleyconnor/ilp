@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- *
+ * This class represents a flight plan which is a collection of drone moves.
  */
 public class FlightPlan {
 
     private ArrayList<DroneMove> plan;
 
+    /**
+     * This creates an instance of a flight plan with a blank plan.
+     */
     public FlightPlan() {
         this.plan = new ArrayList<>();
     }
@@ -22,6 +25,12 @@ public class FlightPlan {
         this.plan = flightPlan;
     }
 
+    /**
+     * This creates an instance of a flight plan for an order by converting a a list of points into drone moves.
+     *
+     * @param flightPlanPoints The list of points in the flight plan.
+     * @param orderNo The order no of the flight plan.
+     */
     public FlightPlan(ArrayList<Point> flightPlanPoints, String orderNo) {
         this.plan = new ArrayList<>();
 
@@ -42,36 +51,60 @@ public class FlightPlan {
 
             if (currentPosition.closeTo(targetPosition)) {
                 targetPositionNumber++;
+
+                // Adds hover move if required.
+                if (targetPositionNumber < (flightPlanPoints.size())) {
+                    if (isHovering(targetPosition, new LongLat(flightPlanPoints.get(targetPositionNumber)))) {
+                        plan.add(new DroneMove(orderNo, nextPostion, nextPostion, LongLat.HOVER_ANGLE));
+                    }
+                }
             }
         }
     }
 
+    /**
+     * This method returns whether a hover move is required, meaning that the current target position is the same as
+     * the next target position.
+     *
+     * @param targetPosition The target position that the drone has reached in the flight plan.
+     * @param nextTargetPosition The next target position that the drone has reached in the flight plan.
+     * @return True if hover is required otherwise false.
+     */
+    private boolean isHovering(LongLat targetPosition, LongLat nextTargetPosition) {
+        if (targetPosition.closeTo(nextTargetPosition)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * This method is used to get this flight plans total number of drone moves.
+     *
+     * @return The number of drone moves that the flight plan contains
+     */
     public int size(){
         return this.plan.size();
     }
 
+    /**
+     * This method used tp get this flight plans list of drone moves.
+     *
+     * @return the list of drone moves in the flight plan.
+     */
     public ArrayList<DroneMove> getPlan() {
         return this.plan;
     }
 
-    public double getPlanDistance() {
-        double distance = 0.0;
-
-        LongLat currentPosition;
-        LongLat nextPostion;
-
-        for (int i = 1; i < plan.size(); i++) {
-            currentPosition =  plan.get(i - 1).fromLongLat;
-            nextPostion = plan.get(i).fromLongLat;
-
-            distance += currentPosition.distanceTo(nextPostion);
-        }
-
-        distance += plan.get(plan.size()).fromLongLat.distanceTo(plan.get(plan.size()).toLongLat);
-
-        return distance;
-    }
-
+    /**
+     * This method converts the flight plan into a geojson then saves it in the current directory to a  file called
+     * "drone-day-month-year.geojson".
+     *
+     * @param day The day of the flight.
+     * @param month The month of the flight.
+     * @param year The year of the flight.
+     */
     public void toGeoJson(String day, String month, String year){
         ArrayList<Point> flightPlanPoints = new ArrayList<>();
         flightPlanPoints.add(plan.get(0).fromLongLat.toPoint());

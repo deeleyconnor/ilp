@@ -32,7 +32,7 @@ public class LongLat {
 
     private final static double CLOSE_DISTANCE =  0.00015;
     public final static double MOVE_DISTANCE = 0.00015;
-    private final static int HOVER_ANGLE = -999;
+    public final static int HOVER_ANGLE = -999;
 
     public final double longitude;
     public final double latitude;
@@ -104,16 +104,11 @@ public class LongLat {
      * This method calculates the angle from this location to the target to the nearest 10.
      *
      * @param target The target location that we want to know the angle to.
-     * @return An angle in degrees between 0 and 350 which is a multiple of 10. If target position is the same as this
-     *         location then the hover angle will be returned.
+     * @return An angle in degrees between 0 and 350 which is a multiple of 10.
      */
     public int angleTo(LongLat target) {
         double longitudeDiff = target.longitude - this.longitude;
         double latitudeDiff = target.latitude - this.latitude;
-
-        if (longitudeDiff == 0 && latitudeDiff == 0) {
-            return HOVER_ANGLE;
-        }
 
         int angle = (int) (Math.round(Math.toDegrees(Math.atan2(latitudeDiff,longitudeDiff)) / 10) * 10);
 
