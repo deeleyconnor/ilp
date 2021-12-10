@@ -21,10 +21,6 @@ public class FlightPlan {
         this.plan = new ArrayList<>();
     }
 
-    public FlightPlan(ArrayList<DroneMove> flightPlan) {
-        this.plan = flightPlan;
-    }
-
     /**
      * This creates an instance of a flight plan for an order by converting a a list of points into drone moves.
      *
