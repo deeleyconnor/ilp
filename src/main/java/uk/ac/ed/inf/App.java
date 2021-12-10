@@ -33,15 +33,10 @@ public class App
         FlightPlan flightPlan = getFlightPlan(orders);
         System.out.println("Flight Planned");
 
-        int count = 0;
-        for (Order order: orders) {
-            if (order.completed()) {
-                count += 1;
-            }
-        }
-        System.out.println(count);
-        System.out.println(orders.size());
-        System.out.println(flightPlan.size());
+        int completedOrderCount = (int) orders.stream().filter(order -> order.completed()).count();
+
+        System.out.printf("Orders delivered %s/%s%n", completedOrderCount, orders.size());
+        System.out.printf("Total Drone Moves %s%n",flightPlan.size());
 
         saveFlightPlan(day, month, year, databaseClient, orders, flightPlan);
     }
@@ -50,8 +45,8 @@ public class App
      * This method gets the order data so that a flight plan can be created.
      *
      * @param day The day of the lunch orders the delivery flight plan is to be created.
-     * @param month The day of the lunch orders the delivery flight plan to be created.
-     * @param year
+     * @param month The month of the lunch orders the delivery flight plan to be created.
+     * @param year The year of the lunch orders the delivery flight plan to be created.
      * @param databaseClient The database client used for connecting to the database to request data.
      * @return The orders that are to be delivered on that date.
      */
@@ -65,13 +60,12 @@ public class App
     /**
      * This method is used to get the flight plan from a Flight Planner given a list of orders.
      *
-     * @param orders
-     * @return
+     * @param orders The orders that a flight plan is to be created for.
+     * @return The best flight plan found for the list of orders.
      */
     private static FlightPlan getFlightPlan(ArrayList<Order> orders) {
         FlightPlanner flightPlanner = new FlightPlanner();
-        FlightPlan flightPlan = flightPlanner.dayFlightPlanner(orders);
-        return flightPlan;
+        return flightPlanner.dayFlightPlanner(orders);
     }
 
     /**
@@ -83,7 +77,7 @@ public class App
      * @param year The year of the lunch orders delivery flight plan was created for.
      * @param databaseClient The database client used for connecting to the database to request data.
      * @param orders The orders that we want to add to the deliveries table in the database if they are completed.
-     * @param flightPlan The flightplan that we want to create a geojson file for and add to the fligtpath table in the
+     * @param flightPlan The flight plan that we want to create a geojson file for and add to the flightpath table in the
      *                   database.
      */
     private static void saveFlightPlan(String day, String month, String year, DatabaseClient databaseClient, ArrayList<Order> orders, FlightPlan flightPlan) {

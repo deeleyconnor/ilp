@@ -2,7 +2,6 @@ package uk.ac.ed.inf;
 
 import org.junit.Test;
 
-import java.awt.geom.Line2D;
 import java.sql.SQLException;
 
 import static org.junit.Assert.*;
@@ -20,7 +19,25 @@ public class AppTest {
     @Test
     public void testApp() throws SQLException {
         App.main("24", "05", "2022", "80", "1527");
+        App.main("24", "05", "2023", "80", "1527");
 
+        assertTrue(true);
+    }
+
+    @Test
+    public void getTestFiles() {
+        App.main("01", "01", "2022", "80", "1527");
+        App.main("02", "02", "2022", "80", "1527");
+        App.main("03", "03", "2022", "80", "1527");
+        App.main("04", "04", "2022", "80", "1527");
+        App.main("05", "05", "2022", "80", "1527");
+        App.main("06", "06", "2022", "80", "1527");
+        App.main("07", "07", "2022", "80", "1527");
+        App.main("08", "08", "2022", "80", "1527");
+        App.main("09", "09", "2022", "80", "1527");
+        App.main("10", "10", "2022", "80", "1527");
+        App.main("11", "11", "2022", "80", "1527");
+        App.main("12", "12", "2022", "80", "1527");
 
         assertTrue(true);
     }

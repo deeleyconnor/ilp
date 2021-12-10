@@ -19,10 +19,11 @@ public class FlightPlanner {
     private final int SINGLE_PICKUP_POINT = 1;
 
     private final ArrayList<LongLat> landmarks = new ArrayList<>();
-    private FeatureCollection noFlyZones;
+    private final FeatureCollection noFlyZones;
 
     /**
-     *
+     * This creates an instance of flight planner. It retrieves the landmarks and the no fly zones from the webserver
+     * and saves them. The landmarks are converted to LongLat positions for easier use later.
      */
     public FlightPlanner() {
         FeatureCollection landmarksFeature = getGeoJsonData(LANDMARKS_FILE_LOCATION);
@@ -36,6 +37,12 @@ public class FlightPlanner {
         noFlyZones = getGeoJsonData(NO_FLY_ZONES_FILE_LOCATION);
     }
 
+    /**
+     * This method gets a GeoJson file from the web server and stores it as a feature collection.
+     *
+     * @param fileLocation The file location of the geojson file.
+     * @return A GeoJson feature collection.
+     */
     private FeatureCollection getGeoJsonData(String fileLocation) {
         String responseBody = WebServerClient.request(fileLocation);
 
@@ -43,11 +50,11 @@ public class FlightPlanner {
     }
 
     /**
-     * This method takes a list of orders which each have a flight plan and converts them into a single flight plan
+     * This method takes a list of orders and gets a flight plan for each then converts them into a single flight plan
      * including as many of the orders as possible while being less drone moves than MAXIMUM_DRONE_MOVES.
      *
      * @param orders The list of orders for the day.
-     * @return A combined flight plan
+     * @return A combined flight plan of the orders.
      */
     public FlightPlan dayFlightPlanner(ArrayList<Order> orders) {
         orders.forEach(this::orderFlightPlanner);
@@ -96,8 +103,8 @@ public class FlightPlanner {
                 returnFlightPlan = optimalOrder.getReturnFlightPlan();
             }
             else {
-                flightPlanComplete = true;
                 flightPlan.getPlan().addAll(returnFlightPlan.getPlan());
+                flightPlanComplete = true;
             }
         }
 
@@ -105,9 +112,9 @@ public class FlightPlanner {
     }
 
     /**
-     * This method creates a flight path for an order.
+     * This method creates a flight path and a return flight plan for a single order.
      *
-     * @param order
+     * @param order The order that the flight plan is being created for.
      */
     private void orderFlightPlanner(Order order) {
         ArrayList<Point> orderFlightPlan;
@@ -117,8 +124,7 @@ public class FlightPlanner {
 
 
         if (pickupLocations.size() == SINGLE_PICKUP_POINT) {
-            orderFlightPlan = twoPointsFlightPlanner(pickupLocations.get(0),deliveryLocation);
-            orderFlightPlan.add(deliveryLocation.toPoint());
+            orderFlightPlan = singleOrderFlightPlan(deliveryLocation, pickupLocations);
         }
         else {
             orderFlightPlan = doublePickupOrderFlightPlanner(pickupLocations, deliveryLocation);
@@ -126,15 +132,35 @@ public class FlightPlanner {
 
         LongLat lastPoint = new LongLat(orderFlightPlan.get(orderFlightPlan.size()-1));
 
-
         ArrayList<Point> orderReturnFlightPlan = twoPointsFlightPlanner(lastPoint,APPLETON_TOWER);
         orderReturnFlightPlan.add(APPLETON_TOWER.toPoint());
 
         order.setOrderFlightPlan(new FlightPlan(orderFlightPlan, order.getOrderNo()));
-
         order.setReturnFlightPlan(new FlightPlan(orderReturnFlightPlan, RETURN_TO_APPLETON_ORDER_NO));
     }
 
+    /**
+     * This method creates a estimated flight plan for a signle pickup order.
+     *
+     * @param pickupLocations The pickup location required for the order.
+     * @param deliveryLocation The delivery location of the order.
+     * @return A estimated flight plan for the single pickup order.
+     */
+    private ArrayList<Point> singleOrderFlightPlan(LongLat deliveryLocation, ArrayList<LongLat> pickupLocations) {
+        ArrayList<Point> orderFlightPlan;
+        orderFlightPlan = twoPointsFlightPlanner(pickupLocations.get(0), deliveryLocation);
+        orderFlightPlan.add(deliveryLocation.toPoint());
+        return orderFlightPlan;
+    }
+
+    /**
+     * This method creates an estimated flight plan between two points. If a direct path is not possible then it
+     * attempts to use one of the landmarks to avoid the no fly zones.
+     *
+     * @param startLocation The start location of the estimated flight plan.
+     * @param finishLocation The finish location of the estimated flight plan.
+     * @return An estimated flight plan between the two points.
+     */
     private ArrayList<Point> twoPointsFlightPlanner(LongLat startLocation, LongLat finishLocation) {
         ArrayList<Point> flightPlan = new ArrayList<>();
         flightPlan.add(startLocation.toPoint());
@@ -167,17 +193,19 @@ public class FlightPlanner {
         return flightPlan;
     }
 
-    private ArrayList<Point> doublePickupOrderFlightPlanner(ArrayList<LongLat> pickupLocation, LongLat deliveryLocation) {
-        ArrayList<Point> orderFlightPlan1 = new ArrayList<>();
-        ArrayList<Point> orderFlightPlan2 = new ArrayList<>();
+    /**
+     * This method is used for getting the best flight plan for a double pickup order. It creates two flight plans with
+     * the pickup locations swapped around.
+     *
+     * @param pickupLocations The pickup locations required for the order.
+     * @param deliveryLocation The delivery location of the order.
+     * @return A estimated flight plan for the double pickup order
+     */
+    private ArrayList<Point> doublePickupOrderFlightPlanner(ArrayList<LongLat> pickupLocations, LongLat deliveryLocation) {
 
-        orderFlightPlan1.addAll(twoPointsFlightPlanner(pickupLocation.get(0),pickupLocation.get(1)));
-        orderFlightPlan1.addAll(twoPointsFlightPlanner(pickupLocation.get(1),deliveryLocation));
-        orderFlightPlan1.add(deliveryLocation.toPoint());
 
-        orderFlightPlan2.addAll(twoPointsFlightPlanner(pickupLocation.get(1),pickupLocation.get(0)));
-        orderFlightPlan2.addAll(twoPointsFlightPlanner(pickupLocation.get(0),deliveryLocation));
-        orderFlightPlan2.add(deliveryLocation.toPoint());
+        ArrayList<Point> orderFlightPlan1 = getDoublePickupOrderPlan(pickupLocations, deliveryLocation, 0, 1);
+        ArrayList<Point> orderFlightPlan2 = getDoublePickupOrderPlan(pickupLocations, deliveryLocation, 1, 0);
 
         if (getFlightPlanEstimateDistance(orderFlightPlan1) < getFlightPlanEstimateDistance(orderFlightPlan2)) {
             return orderFlightPlan1;
@@ -185,6 +213,23 @@ public class FlightPlanner {
         else {
             return orderFlightPlan2;
         }
+    }
+
+    /**
+     * This method creates a estimated flight plan for a double pickup order.
+     *
+     * @param pickupLocations The pickup locations required for the order.
+     * @param deliveryLocation The delivery location of the order.
+     * @param firstPickupIndex The index of the first pickup location.
+     * @param secondPickupIndex The index of the second pickup location.
+     * @return A estimated flight plan for the double pickup order.
+     */
+    private ArrayList<Point> getDoublePickupOrderPlan(ArrayList<LongLat> pickupLocations, LongLat deliveryLocation, int firstPickupIndex, int secondPickupIndex) {
+        ArrayList<Point> orderFlightPlan = new ArrayList<>();
+        orderFlightPlan.addAll(twoPointsFlightPlanner(pickupLocations.get(firstPickupIndex), pickupLocations.get(secondPickupIndex)));
+        orderFlightPlan.addAll(twoPointsFlightPlanner(pickupLocations.get(secondPickupIndex), deliveryLocation));
+        orderFlightPlan.add(deliveryLocation.toPoint());
+        return orderFlightPlan;
     }
 
     /**
@@ -198,13 +243,13 @@ public class FlightPlanner {
         double distance = 0.0;
 
         LongLat currentPosition;
-        LongLat nextPostion;
+        LongLat nextPosition;
 
         for (int i = 1; i < path.size(); i++) {
             currentPosition =  new LongLat(path.get(i-1));
-            nextPostion = new LongLat(path.get(i));
+            nextPosition = new LongLat(path.get(i));
 
-            distance += currentPosition.distanceTo(nextPostion);
+            distance += currentPosition.distanceTo(nextPosition);
         }
 
         return distance;
