@@ -5,27 +5,6 @@ import com.mapbox.geojson.Point;
 import java.lang.Math;
 
 /**
- * The values of the drone confinement area.
- */
-enum DroneConfinementArea {
-    MIN_LONGITUDE(-3.184319f),
-    MAX_LONGITUDE(-3.192473f),
-    MIN_LATITUDE(55.942617f),
-    MAX_LATITUDE(55.946233f);
-
-    public final double value;
-
-    /**
-     * Assign a value to each part of drone confinement area.
-     *
-     * @param value The value of the part of the drone confinement area.
-     */
-    DroneConfinementArea(double value) {
-        this.value = value;
-    }
-}
-
-/**
  * Represents a location with a longitude and latitude coordinate.
  */
 public class LongLat {
@@ -58,19 +37,6 @@ public class LongLat {
     public LongLat (Point point) {
         this.longitude = point.longitude();
         this.latitude = point.latitude();
-    }
-
-    /**
-     * This method checks whether this LongLat instance is within the drone confinement area.
-     *
-     * @return True if the location is within the drone confinement area. Otherwise returns false.
-     * @see DroneConfinementArea
-     */
-    public boolean isConfined() {
-        return (DroneConfinementArea.MIN_LONGITUDE.value > this.longitude)
-                        && (DroneConfinementArea.MAX_LONGITUDE.value < this.longitude)
-                        && (DroneConfinementArea.MIN_LATITUDE.value < this.latitude)
-                        && (DroneConfinementArea.MAX_LATITUDE.value > this.latitude);
     }
 
     /**

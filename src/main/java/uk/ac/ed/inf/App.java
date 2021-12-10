@@ -10,8 +10,9 @@ public class App
     public static final String MACHINE_NAME = "localhost";
 
     /**
-     * This method takes a date to create a flight plan for the drone on a certain day and writes this plan to a
-     * geojson file as well as the flightpath and deliveries tables in the database.
+     * This method takes a date to create a flight plan for the drone on a certain day as well as a webserver port and
+     * a database port and writes this plan to a geojson file as well as the flightpath and deliveries tables in the
+     * database.
      */
     public static void main(String[] args) {
         String day  = args[0];
@@ -33,7 +34,7 @@ public class App
         FlightPlan flightPlan = getFlightPlan(orders);
         System.out.println("Flight Planned");
 
-        int completedOrderCount = (int) orders.stream().filter(order -> order.completed()).count();
+        int completedOrderCount = (int) orders.stream().filter(Order::completed).count();
 
         System.out.printf("Orders delivered %s/%s%n", completedOrderCount, orders.size());
         System.out.printf("Total Drone Moves %s%n",flightPlan.size());

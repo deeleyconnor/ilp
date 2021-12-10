@@ -12,7 +12,7 @@ public class Order {
     private final String deliverTo;
 
     private LongLat deliveryLocation;
-    private ArrayList<LongLat> pickupLocations = new ArrayList<>();
+    private final ArrayList<LongLat> pickupLocations = new ArrayList<>();
     private int orderPrice;
 
     private FlightPlan orderFlightPlan;
