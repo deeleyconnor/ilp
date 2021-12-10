@@ -12,14 +12,14 @@ public class App
     /**
      * This method takes a date to create a flight plan for the drone on a certain day and writes this plan to a
      * geojson file as well as the flightpath and deliveries tables in the database.
-     *
-     * @param day The day of the lunch orders delivery flight plan is to be created for.
-     * @param month The month of the lunch orders delivery flight plan is to be created for.
-     * @param year The year of the lunch orders delivery flight plan is to be created for.
-     * @param webserverPort The port that the webserver is running on.
-     * @param databasePort The port that the database is running on.
      */
-    public static void main(String day, String month, String year,String webserverPort, String databasePort) {
+    public static void main(String[] args) {
+        String day  = args[0];
+        String month = args[1];
+        String year = args[2];
+        String webserverPort = args[3];
+        String databasePort = args[4];
+
         System.out.println( "System Started!" );
 
         System.out.println("Setting up Web Server client and Database client");

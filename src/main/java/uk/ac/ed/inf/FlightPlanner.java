@@ -69,7 +69,7 @@ public class FlightPlanner {
         boolean flightPlanComplete = false;
 
         while (!flightPlanComplete) {
-            FlightPlan opitimalOrderFlightPlanToStart = new FlightPlan();
+            FlightPlan optimalOrderFlightPlanToStart = new FlightPlan();
             double optimalOrderValue = Double.MIN_VALUE;
             Order optimalOrder = null;
             for (Order order : orders) {
@@ -87,7 +87,7 @@ public class FlightPlanner {
                         if (currentOrderValue > optimalOrderValue) {
                             optimalOrderValue = currentOrderValue;
                             optimalOrder = order;
-                            opitimalOrderFlightPlanToStart = currentOrderStartFlightPlan;
+                            optimalOrderFlightPlanToStart = currentOrderStartFlightPlan;
                         }
                     }
                 }
@@ -95,10 +95,10 @@ public class FlightPlanner {
 
             if (optimalOrder != null) {
                 ArrayList<DroneMove> optimalFlightPlan = optimalOrder.getOrderFlightPlan().getPlan();
-                flightPlan.getPlan().addAll(opitimalOrderFlightPlanToStart.getPlan());
+                flightPlan.getPlan().addAll(optimalOrderFlightPlanToStart.getPlan());
                 flightPlan.getPlan().addAll(optimalFlightPlan);
                 optimalOrder.complete();
-                movesAvailable -= opitimalOrderFlightPlanToStart.size() + optimalOrder.getOrderFlightPlanMoveCount();
+                movesAvailable -= optimalOrderFlightPlanToStart.size() + optimalOrder.getOrderFlightPlanMoveCount();
                 currentPos = optimalFlightPlan.get(optimalFlightPlan.size() - 1).toLongLat;
                 returnFlightPlan = optimalOrder.getReturnFlightPlan();
             }
@@ -140,7 +140,7 @@ public class FlightPlanner {
     }
 
     /**
-     * This method creates a estimated flight plan for a signle pickup order.
+     * This method creates a estimated flight plan for a single pickup order.
      *
      * @param pickupLocations The pickup location required for the order.
      * @param deliveryLocation The delivery location of the order.
